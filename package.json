@@ -1,0 +1,17 @@
+{
+  "name": "corvus",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A RavenDB client for mobile devices",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simoneb/corvus.git"
+  },
+  "author": "Simone Busoli",
+  "homepage": "https://github.com/simoneb/corvus",
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-util": "^3.0.1",
+    "shelljs": "^0.3.0"
+  }
+}
