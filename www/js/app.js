@@ -1,7 +1,7 @@
 angular.module('corvusApp',
     ['ionic', 'corvus.controllers', 'corvus.filters', 'corvus.services', 'corvus.directives', 'ngRaven', 'ngCordova'])
 
-    .run(function ($ionicPlatform, $state, Auth) {
+    .run(function ($ionicPlatform) {
       $ionicPlatform.ready(function () {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -11,12 +11,6 @@ angular.module('corvusApp',
         if (window.StatusBar) {
           // org.apache.cordova.statusbar required
           StatusBar.styleDefault();
-        }
-
-        if (Auth.hasConnections()) {
-          $state.go('connections.list');
-        } else {
-          $state.go('connections.edit');
         }
       });
     })

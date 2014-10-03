@@ -24,7 +24,7 @@ angular.module('corvus.controllers', [])
         Spinner.show();
         raven($scope.connection).getUser({ ignoreErrors: 404 })
             .then(function () {
-              Toast.showShortBottom('Everything alright!');
+              Toast.showShortCenter('Everything alright!');
             }, function (res) {
               if (res.status === 404)
                 Toast.showShortBottom('Wrong url or database name (status 404)');
@@ -39,7 +39,7 @@ angular.module('corvus.controllers', [])
             .then(function (result) {
               if (result === 1) {
                 Connections.remove(name);
-                Toast.showShortBottom('Connection ' + name + ' deleted').finally(function () {
+                Toast.showShortCenter('Connection ' + name + ' deleted').finally(function () {
                   $state.go('connections.list');
                 });
               }
@@ -176,7 +176,7 @@ angular.module('corvus.controllers', [])
       }
     })
 
-    .controller('DocumentCtrl', function ($scope, $stateParams, $ionicNavBarDelegate, $ionicPopover, Toast, Dialogs, ravenClient) {
+    .controller('DocumentCtrl', function ($scope, $stateParams, $ionicNavBarDelegate, $ionicPopover, Toast, Dialogs, Spinner, ravenClient) {
       $scope.documentId = $stateParams.id;
       $scope.editable = false;
       $scope.hasChanged = false;
@@ -237,12 +237,16 @@ angular.module('corvus.controllers', [])
         Dialogs.confirm('Are you sure you want to delete this document?')
             .then(function (result) {
               if (result === 1) {
+                Spinner.show();
+
                 ravenClient.deleteDocument($scope.documentId)
                     .then(function () {
-                      Toast.showShortBottom('Document ' + $scope.documentId + ' deleted')
+                      Toast.showShortCenter('Document ' + $scope.documentId + ' deleted')
                           .finally(function () {
                             $ionicNavBarDelegate.back();
                           });
+                    }).finally(function () {
+                      Spinner.hide();
                     });
               }
             });
@@ -267,18 +271,23 @@ angular.module('corvus.controllers', [])
 
       $scope.save = function () {
         $scope.popover.hide();
+
         Dialogs.confirm('Are you sure you want to save your changes?')
             .then(function (result) {
               if (result === 1) {
+                Spinner.show();
                 ravenClient.saveDocument($scope.documentId,
                     $scope.metadata,
                     angular.fromJson($scope.jsonDocument.value), { ignoreErrors: 409 })
                     .then(function () {
-                      Toast.showShortBottom('Document ' + $scope.documentId + ' updated');
+                      Toast.showShortCenter('Document ' + $scope.documentId + ' updated');
                     }, function (res) {
                       if (res.status === 409) {
                         Toast.showShortBottom('The document was changed on the server, please reload');
                       }
+                    })
+                    .finally(function () {
+                      Spinner.hide();
                     });
               }
             });

@@ -37,8 +37,8 @@ angular.module('corvus.services', [])
       };
 
       self.list = function () {
-        return store.getItem('connections') &&
-        angular.fromJson(store.getItem('connections')) || [];
+        var item = store.getItem('connections');
+        return item && angular.fromJson(item) || [];
       };
 
       self.save = function (connection, oldName) {
