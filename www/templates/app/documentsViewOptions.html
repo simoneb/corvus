@@ -1,0 +1,20 @@
+<ion-popover-view>
+  <ion-header-bar class="bar-dark">
+    <h1 class="title">Layout</h1>
+  </ion-header-bar>
+  <ion-content>
+    <div class="list">
+      <label class="item item-radio" ng-repeat="mode in layoutModes">
+        <input type="radio"
+               ng-model="layout.mode"
+               ng-value="mode"
+               name="layout-mode">
+
+        <div class="item-content">
+          {{ mode }}
+        </div>
+        <i class="radio-icon ion-checkmark"></i>
+      </label>
+    </div>
+  </ion-content>
+</ion-popover-view>

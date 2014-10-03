@@ -1,0 +1,21 @@
+<ion-popover-view>
+  <ion-header-bar class="bar-dark">
+    <h1 class="title">Edit</h1>
+  </ion-header-bar>
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-icon-right" ng-if="hasChanged" ng-click="save()">
+        Save <i class="icon ion-checkmark"></i>
+      </ion-item>
+      <ion-item class="item-icon-right" ng-if="!editable" ng-click="edit()">
+        Edit <i class="icon ion-edit"></i>
+      </ion-item>
+      <ion-item class="item-icon-right" ng-if="editable" ng-click="undo()">
+        Cancel changes<i class="icon ion-ios7-undo"></i>
+      </ion-item>
+      <ion-item class="item-icon-right" ng-click="remove()">
+        Remove <i class="icon ion-trash-a"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-popover-view>

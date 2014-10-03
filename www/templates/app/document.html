@@ -1,0 +1,44 @@
+<ion-view title="{{documentId}}">
+  <ion-nav-buttons side="right">
+    <button class="button button-clear" ng-click="openPopover($event)">
+      <i class="icon ion-ios7-more"></i>
+    </button>
+  </ion-nav-buttons>
+
+  <ion-tabs class="tabs-color-dark tabs-icon-only">
+    <ion-tab title="Document" icon-on="ion-document-text" icon-off="ion-document-text">
+      <div ng-if="!editable" class="bar bar-subheader">
+        <h2 class="title">Document</h2>
+      </div>
+      <ion-content class="has-header" ng-class="{ 'has-subheader': !editable }">
+        <textarea class="padding" style="background-color: #ffffff; font-family: monospace, serif"
+                  rows="{{numberOfLines}}"
+                  ng-change="changed()"
+                  ng-readonly="!editable" ng-model="jsonDocument.value"></textarea>
+      </ion-content>
+    </ion-tab>
+
+    <ion-tab title="Metadata" icon-on="ion-document" icon-off="ion-document">
+      <div class="bar bar-subheader">
+        <h2 class="title">Metadata</h2>
+      </div>
+      <ion-content class="has-header has-subheader padding">
+        <pre>{{ metadata | json }}</pre>
+      </ion-content>
+    </ion-tab>
+
+    <ion-tab ng-if="references.length" title="References" icon-on="ion-link" icon-off="ion-link">
+      <div class="bar bar-subheader">
+        <h2 class="title">References</h2>
+      </div>
+      <ion-content class="has-subheader">
+        <ion-list>
+          <ion-item ng-repeat="ref in references" ui-sref="app.document({ id: ref })">
+            {{ ref }}
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-tab>
+  </ion-tabs>
+
+</ion-view>

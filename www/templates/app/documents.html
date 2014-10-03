@@ -1,0 +1,36 @@
+<ion-view title="{{title}}">
+  <ion-nav-buttons side="right">
+    <button class="button button-clear" ng-click="openPopover($event)">
+      <i class="icon ion-ios7-more"></i>
+    </button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <ion-list ng-if="layout.mode === 'List'">
+      <ion-item
+          ng-repeat="document in documents"
+          ui-sref="app.document({ id: document['@metadata']['@id'] })">
+        <p>{{document['@metadata']['@id']}}</p>
+
+        <h3>{{ document | omitMetadata }}</h3>
+      </ion-item>
+    </ion-list>
+    <div ng-if="layout.mode.indexOf('Cards') !== -1">
+      <div class="card" ng-repeat="document in documents"
+           ui-sref="app.document({ id: document['@metadata']['@id'] })">
+        <div class="item item-divider" style="font-size: small">
+          {{ document['@metadata']['@id'] }}
+        </div>
+        <pre class="item item-document-card"
+             ng-style="{ 'max-height': layout.mode.indexOf('Small') !== -1 ? '150px' :
+              layout.mode.indexOf('Medium') !== -1 ? '350px' : 'auto' }"
+            >{{ document | omitMetadata | json }}</pre>
+      </div>
+    </div>
+
+    <ion-infinite-scroll
+        ng-if="!noMoreDocs"
+        on-infinite="loadNextPage()"
+        distance="1%">
+    </ion-infinite-scroll>
+  </ion-content>
+</ion-view>
