@@ -1,0 +1,3 @@
+[submodule "AndroidInAppBilling"]
+	path = AndroidInAppBilling
+	url = https://github.com/poiuytrez/AndroidInAppBilling.git
