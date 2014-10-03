@@ -6,3 +6,16 @@ www/lib/angular*
 www/lib/collide/
 www/lib/ngCordova/demo/
 www/lib/ionic/scss
+www/lib/ionic/js/ionic.bundle.js
+www/lib/ionic/js/ionic.js
+www/lib/ionic/js/ionic.min.js
+www/lib/ionic/js/ionic-angular.js
+www/lib/ionic/js/ionic-angular.min.js
+www/lib/lodash/dist/lodash.underscore.min.js
+www/lib/lodash/dist/lodash.js
+www/lib/lodash/dist/lodash.compat.min.js
+www/lib/lodash/dist/lodash.compat.js
+www/lib/lodash/dist/lodash.underscore.js
+www/lib/ngCordova/dist/ng-cordova-mocks.js
+www/lib/ngCordova/dist/ng-cordova.js
+www/lib/ngCordova/dist/ng-cordova-mocks.min.js
