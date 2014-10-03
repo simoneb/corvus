@@ -3,6 +3,6 @@
   "private": "true",
   "dependencies": {
     "lodash": "~2.4.1",
-    "ngCordova": "~0.1.4-alpha"
+    "ngCordova": "https://github.com/driftyco/ng-cordova.git#master"
   }
 }
