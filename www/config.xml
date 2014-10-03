@@ -1,9 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
-<widget id="com.simoneb.corvus"
-        version="0.0.1"
-        xmlns:gap="http://phonegap.com/ns/1.0"
-        xmlns="http://www.w3.org/ns/widgets"
-        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.1">
 
     <name>Corvus</name>
 
@@ -15,26 +12,26 @@
         Simone Busoli
     </author>
 
-    <content src="index.html" />
+    <content src="index.html"/>
 
-    <access origin="*" />
+    <access origin="*"/>
 
-    <gap:platform name="android" />
-    <preference name="phonegap-version" value="3.6.3" />
+    <gap:platform name="android"/>
+    <preference name="phonegap-version" value="3.6.3"/>
 
-    <gap:plugin name="com.ionic.keyboard" />
-    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog" />
-    <gap:plugin name="nl.x-services.plugins.toast" />
-    <gap:plugin name="org.apache.cordova.console" />
-    <gap:plugin name="org.apache.cordova.dialogs" />
-    <gap:plugin name="com.mcm.plugins.androidinappbilling" />
+    <gap:plugin name="com.ionic.keyboard"/>
+    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog"/>
+    <gap:plugin name="nl.x-services.plugins.toast"/>
+    <gap:plugin name="org.apache.cordova.console"/>
+    <gap:plugin name="org.apache.cordova.dialogs"/>
+    <gap:plugin name="com.mcm.plugins.androidinappbilling"/>
 
     <!-- from the ionic template -->
-    <preference name="webviewbounce" value="false" />
-    <preference name="UIWebViewBounce" value="false" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackupWebStorage" value="none" />
+    <preference name="webviewbounce" value="false"/>
+    <preference name="UIWebViewBounce" value="false"/>
+    <preference name="DisallowOverscroll" value="true"/>
+    <preference name="BackupWebStorage" value="none"/>
     <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" onload="true" />
+        <param name="ios-package" value="CDVStatusBar" onload="true"/>
     </feature>
 </widget>

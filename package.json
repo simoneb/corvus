@@ -11,7 +11,9 @@
   "homepage": "https://github.com/simoneb/corvus",
   "devDependencies": {
     "gulp": "^3.8.8",
+    "gulp-json-editor": "^2.0.2",
     "gulp-util": "^3.0.1",
+    "gulp-xml-editor": "^2.0.2",
     "shelljs": "^0.3.0"
   }
 }

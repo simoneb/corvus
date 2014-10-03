@@ -5,3 +5,4 @@ plugins/
 www/lib/angular*
 www/lib/collide/
 www/lib/ngCordova/demo/
+www/lib/ionic/scss

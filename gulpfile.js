@@ -1,5 +1,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var xeditor = require("gulp-xml-editor");
+var jeditor = require("gulp-json-editor");
 
 require('shelljs/global');
 
@@ -20,6 +22,25 @@ gulp.task('install', ['git-check'], function () {
       });
 
   exec('ionic platform add android');
+});
+
+gulp.task('bump', function () {
+  var newVersion;
+
+  gulp.src('package.json')
+      .pipe(jeditor(function (json) {
+        var patch = parseInt(/\d+$/.exec(json.version), 10) + 1;
+        json.version = newVersion = json.version.replace(/\d+$/, patch);
+        return json;
+      }))
+      .pipe(gulp.dest('.'));
+
+  gulp.src('www/config.xml')
+      .pipe(xeditor(function (xml) {
+        xml.root().attr({ version: newVersion });
+        return xml;
+      }))
+      .pipe(gulp.dest('www'));
 });
 
 gulp.task('git-check', function (done) {
