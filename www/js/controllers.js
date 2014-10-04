@@ -176,28 +176,56 @@ angular.module('corvus.controllers', [])
       }
     })
 
-    .controller('DocumentCtrl', function ($scope, $stateParams, $ionicNavBarDelegate, $ionicPopover, Toast, Dialogs, Spinner, ravenClient) {
+    .controller('DocumentCtrl',
+    function ($scope, $stateParams, $ionicNavBarDelegate, Toast, Dialogs, Spinner, ActionSheet, ravenClient) {
       $scope.documentId = $stateParams.id;
       $scope.editable = false;
       $scope.hasChanged = false;
 
-      $ionicPopover.fromTemplateUrl('templates/app/documentEditOptions.html', {
-        scope: $scope
-      }).then(function (popover) {
-        $scope.popover = popover;
-      });
-
-      $scope.openPopover = function ($event) {
-        $scope.popover.show($event);
+      var actions = {
+        save: 'Save document',
+        edit: 'Edit document',
+        undo: 'Undo changes',
+        remove: 'Delete document',
+        cancel: 'Cancel'
       };
 
-      $scope.closePopover = function () {
-        $scope.popover.hide();
-      };
+      $scope.openActionSheet = function () {
+        var allowedActions = [];
 
-      $scope.$on('$destroy', function () {
-        if ($scope.popover) $scope.popover.remove();
-      });
+        if ($scope.hasChanged) {
+          allowedActions.push(actions.save);
+        }
+
+        if (!$scope.editable) {
+          allowedActions.push(actions.edit);
+        } else {
+          allowedActions.push(actions.undo);
+        }
+
+        return ActionSheet.show({
+          title: 'Choose action',
+          buttonLabels: allowedActions,
+          addCancelButtonWithLabel: actions.cancel,
+          addDestructiveButtonWithLabel: actions.remove,
+          androidEnableCancelButton: true
+        }).then(function (buttonLabel) {
+          switch (buttonLabel) {
+            case actions.remove:
+              $scope.remove();
+              break;
+            case actions.save:
+              $scope.save();
+              break;
+            case actions.edit:
+              $scope.edit();
+              break;
+            case actions.undo:
+              $scope.undo();
+              break;
+          }
+        });
+      };
 
       ravenClient.getDocument($stateParams.id, { ignoreErrors: 404 })
           .then(function (res) {
@@ -253,43 +281,41 @@ angular.module('corvus.controllers', [])
       };
 
       $scope.changed = function () {
-        $scope.popover.hide();
         $scope.hasChanged = true;
       };
 
       $scope.edit = function () {
-        $scope.popover.hide();
+        Dialogs.confirm('ciao <a href="google.com">pollo</a>');
+
         $scope.editable = true;
       };
 
       $scope.undo = function () {
-        $scope.popover.hide();
         $scope.jsonDocument.value = angular.toJson($scope.document, true);
         $scope.hasChanged = false;
         $scope.editable = false;
       };
 
       $scope.save = function () {
-        $scope.popover.hide();
-
-        Dialogs.confirm('Are you sure you want to save your changes?')
-            .then(function (result) {
-              if (result === 1) {
-                Spinner.show();
-                ravenClient.saveDocument($scope.documentId,
-                    $scope.metadata,
-                    angular.fromJson($scope.jsonDocument.value), { ignoreErrors: 409 })
-                    .then(function () {
-                      Toast.showShortCenter('Document ' + $scope.documentId + ' updated');
-                    }, function (res) {
-                      if (res.status === 409) {
-                        Toast.showShortBottom('The document was changed on the server, please reload');
-                      }
-                    })
-                    .finally(function () {
-                      Spinner.hide();
-                    });
-              }
-            });
+        Dialogs.confirm('Are you sure you want to save your changes?').then(function (result) {
+          if (result === 1) {
+            Spinner.show();
+            ravenClient.saveDocument($scope.documentId,
+                $scope.metadata,
+                angular.fromJson($scope.jsonDocument.value), { ignoreErrors: 409 })
+                .then(function () {
+                  Toast.showShortCenter('Document ' + $scope.documentId + ' updated');
+                  $scope.editable = false;
+                  $scope.hasChanged = false;
+                }, function (res) {
+                  if (res.status === 409) {
+                    Toast.showShortBottom('The document was changed on the server, please reload');
+                  }
+                })
+                .finally(function () {
+                  Spinner.hide();
+                });
+          }
+        });
       };
     });

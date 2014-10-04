@@ -15,7 +15,8 @@ gulp.task('install', ['git-check'], function () {
     'org.apache.cordova.dialogs',
     'https://github.com/Paldom/SpinnerDialog.git',
     'https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git',
-    'AndroidInAppBilling/v3']
+    'AndroidInAppBilling/v3',
+    'https://github.com/EddyVerbruggen/cordova-plugin-actionsheet.git']
       .forEach(function (plugin) {
         "use strict";
         exec('ionic plugin add ' + plugin);

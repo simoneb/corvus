@@ -167,4 +167,52 @@ angular.module('corvus.services', [])
           }
         };
       }
+    })
+    .factory('ActionSheet', function ($window, $q, $ionicActionSheet) {
+      if ($window.plugins && $window.plugins.actionsheet) {
+        return {
+          show: function (options) {
+            var deferred = $q.defer(),
+                allLabels = [options.addDestructiveButtonWithLabel]
+                    .concat(options.buttonLabels)
+                    .concat([options.addCancelButtonWithLabel]);
+
+            $window.plugins.actionsheet.show(options, function (buttonIndex) {
+              deferred.resolve(allLabels[buttonIndex - 1]);
+            });
+
+            return deferred.promise;
+          }
+        };
+      } else {
+        return {
+          show: function (options) {
+            var deferred = $q.defer(),
+                labels = options.buttonLabels || [],
+                hasCancel = options.androidEnableCancelButton || options.winphoneEnableCancelButton;
+
+            $ionicActionSheet.show({
+              buttons: labels.map(function (lbl) {
+                return { text: lbl };
+              }),
+              titleText: options.title,
+              cancelText: hasCancel && options.addCancelButtonWithLabel,
+              destructiveText: options.addDestructiveButtonWithLabel,
+              cancel: function () {
+                deferred.resolve(options.addCancelButtonWithLabel);
+              },
+              buttonClicked: function (buttonIndex) {
+                deferred.resolve(labels[buttonIndex]);
+                return true;
+              },
+              destructiveButtonClicked: function () {
+                deferred.resolve(options.addDestructiveButtonWithLabel);
+                return true;
+              }
+            });
+
+            return deferred.promise;
+          }
+        };
+      }
     });
