@@ -1,6 +1,6 @@
 angular.module('corvus.controllers', [])
 
-    .controller('EditConnectionCtrl', function ($scope, $state, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
+    .controller('EditConnectionCtrl', function ($scope, $state, $q, $window, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
       var name = $stateParams.name;
 
       $scope.create = !name;
@@ -16,20 +16,49 @@ angular.module('corvus.controllers', [])
       }
 
       $scope.save = function () {
-        Connections.save($scope.connection, name);
-        $state.go('connections.list');
+        raven($scope.connection)
+            .getBuildVersion()
+            .then(checkServerVersion)
+            .then(function () {
+              Connections.save($scope.connection, name);
+              $state.go('connections.list');
+            });
       };
 
+      function checkServerVersion(res) {
+        if (/^3/.test(res.data.BuildVersion)) {
+          Spinner.hide();
+
+          return Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
+              'RavenDB version not supported', ['No', 'Yes'])
+              .then(function (buttonIndex) {
+                if (buttonIndex === 2) {
+                  $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
+                }
+              })
+              .finally(function () {
+                return $q.reject(res);
+              });
+        }
+      }
+
       $scope.test = function () {
+        var ravenClient = raven($scope.connection);
+
         Spinner.show();
-        raven($scope.connection).getUser({ ignoreErrors: 404 })
+
+        ravenClient.getBuildVersion()
+            .then(checkServerVersion)
             .then(function () {
-              Toast.showShortCenter('Everything alright!');
-            }, function (res) {
-              if (res.status === 404)
-                Toast.showShortBottom('Wrong url or database name (status 404)');
-            })
-            .finally(function () {
+              ravenClient.getUser({ ignoreErrors: 404 })
+                  .then(function () {
+                    Toast.showShortCenter('Everything alright!');
+                  }, function (res) {
+                    if (res.status === 404)
+                      Toast.showShortBottom('Wrong url or database name (status 404)');
+                  })
+              ;
+            }).finally(function () {
               Spinner.hide();
             });
       };
