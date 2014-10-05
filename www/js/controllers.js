@@ -330,8 +330,6 @@ angular.module('corvus.controllers', [])
       };
 
       $scope.edit = function () {
-        Dialogs.confirm('ciao <a href="google.com">pollo</a>');
-
         $scope.editable = true;
       };
 
