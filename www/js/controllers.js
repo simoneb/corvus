@@ -19,18 +19,25 @@ angular.module('corvus.controllers', [])
         return ravenClient.getBuildVersion()
             .then(function (res) {
               if (/^3/.test(res.data.BuildVersion)) {
-                Spinner.hide();
-
-                return Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
+                Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
                     'RavenDB version not supported', ['No', 'Yes'])
                     .then(function (buttonIndex) {
                       if (buttonIndex === 2) {
                         $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
                       }
-                    })
-                    .finally(function () {
-                      return $q.reject(res);
                     });
+
+                return $q.reject(res);
+              }
+            });
+      }
+
+      function checkPurchase(ravenClient) {
+        return ravenClient.getStats()
+            .then(function (res) {
+              if (res.data.CountOfDocuments > 2000) {
+                return Toast.showLongCenter('Your target server or database contains more than 2000 documents. ' +
+                'There will be a limit to the number of documents you can access for free, for now just enjoy!');
               }
             });
       }
@@ -39,22 +46,33 @@ angular.module('corvus.controllers', [])
         var ravenClient = raven($scope.connection);
         Spinner.show();
 
-        checkServerVersion(ravenClient)
+        ravenClient.getUser({ ignoreErrors: 404 })
             .then(function () {
-              return ravenClient.getUser({ ignoreErrors: 404 })
+              return checkServerVersion(ravenClient)
                   .then(function () {
-                    Toast.showShortCenter('Everything alright!');
-                  }, function (res) {
-                    if (res.status === 404)
-                      Toast.showShortBottom('Wrong url or database name (status 404)');
+                    return checkPurchase(ravenClient);
                   });
-            }).finally(function () {
+            }, function (res) {
+              if (res.status === 404)
+                Toast.showShortBottom('Wrong url or database name (status 404)');
+
+              return $q.reject(res);
+            })
+            .then(function () {
+              Toast.showShortCenter('Everything alright!');
+            })
+            .finally(function () {
               Spinner.hide();
             });
       };
 
       $scope.save = function () {
-        checkServerVersion(raven($scope.connection))
+        var ravenClient = raven($scope.connection);
+
+        checkServerVersion(ravenClient)
+            .then(function () {
+              return checkPurchase(ravenClient);
+            })
             .then(function () {
               Connections.save($scope.connection, name);
               $state.go('connections.list');

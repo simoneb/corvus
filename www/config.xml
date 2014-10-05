@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.2">
+<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.2">
 
     <name>Corvus</name>
 
@@ -11,56 +12,42 @@
         Simone Busoli
     </author>
 
-    <content src="index.html"/>
+    <content src="index.html" />
     <!--<icon src="art/launcher-hdpi.png" />-->
-    <access origin="*"/>
+    <access origin="*" />
 
-    <gap:platform name="android"/>
-    <preference name="phonegap-version" value="3.6.3"/>
+    <gap:platform name="android" />
+    <preference name="phonegap-version" value="3.6.3" />
 
     <platform name="android">
-        <icon src="art/launcher-mdpi.png" density="ldpi"/>
-        <icon src="art/launcher-mdpi.png" density="mdpi"/>
-        <icon src="art/launcher-hdpi.png" density="hdpi"/>
-        <icon src="art/launcher-xhdpi.png" density="xhdpi"/>
-        <icon src="art/launcher-xxhdpi.png" density="xxhdpi"/>
-        <icon src="art/launcher-xxxhdpi.png" density="xxxhdpi"/>
+        <icon src="art/launcher-mdpi.png" density="ldpi" />
+        <icon src="art/launcher-mdpi.png" density="mdpi" />
+        <icon src="art/launcher-hdpi.png" density="hdpi" />
+        <icon src="art/launcher-xhdpi.png" density="xhdpi" />
+        <icon src="art/launcher-xxhdpi.png" density="xxhdpi" />
+        <icon src="art/launcher-xxxhdpi.png" density="xxxhdpi" />
     </platform>
-
-   <!-- <platform name="android">
-
-
-        <splash src="img/android/splash-land-hdpi.png" density="land-hdpi" />
-        <splash src="img/android/splash-land-ldpi.png" density="land-ldpi" />
-        <splash src="img/android/splash-land-mdpi.png" density="land-mdpi" />
-        <splash src="img/android/splash-land-xhdpi.png" density="land-xhdpi" />
-
-        <splash src="img/android/splash-port-hdpi.png" density="port-hdpi" />
-        <splash src="img/android/splash-port-ldpi.png" density="port-ldpi" />
-        <splash src="img/android/splash-port-mdpi.png" density="port-mdpi" />
-        <splash src="img/android/splash-port-xhdpi.png" density="port-xhdpi" />
-    </platform>-->
 
     <!--<preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="5000" />-->
     <!--<preference name="auto-hide-splash-screen" value="false" />-->
 
-    <gap:plugin name="com.ionic.keyboard"/>
-    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog"/>
-    <gap:plugin name="nl.x-services.plugins.toast"/>
-    <gap:plugin name="org.apache.cordova.console"/>
-    <gap:plugin name="org.apache.cordova.dialogs"/>
-    <gap:plugin name="com.mcm.plugins.androidinappbilling"/>
-    <gap:plugin name="nl.x-services.plugins.actionsheet"/>
-    <gap:plugin name="org.apache.cordova.inappbrowser"/>
-    <gap:plugin name="org.apache.cordova.statusbar"/>
+    <gap:plugin name="com.ionic.keyboard" />
+    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog" />
+    <gap:plugin name="nl.x-services.plugins.toast" />
+    <gap:plugin name="org.apache.cordova.console" />
+    <gap:plugin name="org.apache.cordova.dialogs" />
+    <gap:plugin name="com.mcm.plugins.androidinappbilling" />
+    <gap:plugin name="nl.x-services.plugins.actionsheet" />
+    <gap:plugin name="org.apache.cordova.inappbrowser" />
+    <gap:plugin name="org.apache.cordova.statusbar" />
 
     <!-- from the ionic template -->
-    <preference name="webviewbounce" value="false"/>
-    <preference name="UIWebViewBounce" value="false"/>
-    <preference name="DisallowOverscroll" value="true"/>
-    <preference name="BackupWebStorage" value="none"/>
+    <preference name="webviewbounce" value="false" />
+    <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="BackupWebStorage" value="none" />
     <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" onload="true"/>
+        <param name="ios-package" value="CDVStatusBar" onload="true" />
     </feature>
 </widget>
