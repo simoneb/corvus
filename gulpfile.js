@@ -18,7 +18,7 @@ gulp.task('install', ['git-check'], function () {
     'AndroidInAppBilling/v3',
     'https://github.com/EddyVerbruggen/cordova-plugin-actionsheet.git',
     'org.apache.cordova.inappbrowser',
-    'org.apache.cordova.splashscreen'
+    'org.apache.cordova.statusbar'
   ]
       .forEach(function (plugin) {
         "use strict";

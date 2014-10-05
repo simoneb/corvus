@@ -15,51 +15,49 @@ angular.module('corvus.controllers', [])
         $scope.buttonPrefix = $scope.titlePrefix = 'Create';
       }
 
-      $scope.save = function () {
-        raven($scope.connection)
-            .getBuildVersion()
-            .then(checkServerVersion)
-            .then(function () {
-              Connections.save($scope.connection, name);
-              $state.go('connections.list');
+      function checkServerVersion(ravenClient) {
+        return ravenClient.getBuildVersion()
+            .then(function (res) {
+              if (/^3/.test(res.data.BuildVersion)) {
+                Spinner.hide();
+
+                return Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
+                    'RavenDB version not supported', ['No', 'Yes'])
+                    .then(function (buttonIndex) {
+                      if (buttonIndex === 2) {
+                        $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
+                      }
+                    })
+                    .finally(function () {
+                      return $q.reject(res);
+                    });
+              }
             });
-      };
-
-      function checkServerVersion(res) {
-        if (/^3/.test(res.data.BuildVersion)) {
-          Spinner.hide();
-
-          return Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
-              'RavenDB version not supported', ['No', 'Yes'])
-              .then(function (buttonIndex) {
-                if (buttonIndex === 2) {
-                  $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
-                }
-              })
-              .finally(function () {
-                return $q.reject(res);
-              });
-        }
       }
 
       $scope.test = function () {
         var ravenClient = raven($scope.connection);
-
         Spinner.show();
 
-        ravenClient.getBuildVersion()
-            .then(checkServerVersion)
+        checkServerVersion(ravenClient)
             .then(function () {
-              ravenClient.getUser({ ignoreErrors: 404 })
+              return ravenClient.getUser({ ignoreErrors: 404 })
                   .then(function () {
                     Toast.showShortCenter('Everything alright!');
                   }, function (res) {
                     if (res.status === 404)
                       Toast.showShortBottom('Wrong url or database name (status 404)');
-                  })
-              ;
+                  });
             }).finally(function () {
               Spinner.hide();
+            });
+      };
+
+      $scope.save = function () {
+        checkServerVersion(raven($scope.connection))
+            .then(function () {
+              Connections.save($scope.connection, name);
+              $state.go('connections.list');
             });
       };
 

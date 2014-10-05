@@ -13,13 +13,24 @@
     </author>
 
     <content src="index.html" />
-    <icon src="www/img/corvus.png" />
+    <!--<icon src="art/launcher-hdpi.png" />-->
     <access origin="*" />
 
     <gap:platform name="android" />
     <preference name="phonegap-version" value="3.6.3" />
 
     <platform name="android">
+        <icon src="art/launcher-mdpi.png" density="ldpi" />
+        <icon src="art/launcher-mdpi.png" density="mdpi" />
+        <icon src="art/launcher-hdpi.png" density="hdpi" />
+        <icon src="art/launcher-xhdpi.png" density="xhdpi" />
+        <icon src="art/launcher-xxhdpi.png" density="xxhdpi" />
+        <icon src="art/launcher-xxxhdpi.png" density="xxxhdpi" />
+    </platform>
+
+   <!-- <platform name="android">
+
+
         <splash src="img/android/splash-land-hdpi.png" density="land-hdpi" />
         <splash src="img/android/splash-land-ldpi.png" density="land-ldpi" />
         <splash src="img/android/splash-land-mdpi.png" density="land-mdpi" />
@@ -29,10 +40,10 @@
         <splash src="img/android/splash-port-ldpi.png" density="port-ldpi" />
         <splash src="img/android/splash-port-mdpi.png" density="port-mdpi" />
         <splash src="img/android/splash-port-xhdpi.png" density="port-xhdpi" />
-    </platform>
+    </platform>-->
 
-    <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="5000" />
+    <!--<preference name="SplashScreen" value="screen" />
+    <preference name="SplashScreenDelay" value="5000" />-->
     <!--<preference name="auto-hide-splash-screen" value="false" />-->
 
     <gap:plugin name="com.ionic.keyboard" />
@@ -43,7 +54,7 @@
     <gap:plugin name="com.mcm.plugins.androidinappbilling" />
     <gap:plugin name="nl.x-services.plugins.actionsheet" />
     <gap:plugin name="org.apache.cordova.inappbrowser" />
-    <gap:plugin name="org.apache.cordova.splashscreen" />
+    <gap:plugin name="org.apache.cordova.statusbar" />
 
     <!-- from the ionic template -->
     <preference name="webviewbounce" value="false" />

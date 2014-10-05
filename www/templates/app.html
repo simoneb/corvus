@@ -1,42 +1,44 @@
 <ion-side-menus>
+    <ion-pane ion-side-menu-content>
+        <ion-nav-bar class="bar-dark" animation="no-animation">
+            <button ng-hide="$exposeAside.active" menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-bar>
+        <ion-nav-buttons side="left">
+            <img style="margin-left: 5px" src="img/icon.png">
+        </ion-nav-buttons>
+        <ion-nav-view name="menuContent" animation="no-animation"></ion-nav-view>
+    </ion-pane>
 
-  <ion-pane ion-side-menu-content>
-    <ion-nav-bar class="bar-dark" animation="no-animation">
-      <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-bar>
-    <ion-nav-view name="menuContent" animation="no-animation"></ion-nav-view>
-  </ion-pane>
+    <ion-side-menu side="left" expose-aside-when="large">
+        <header class="bar bar-header bar-dark" ng-click="changeConnection()">
+            <button class="button button-icon ion-wifi"></button>
+            <h1 class="title">{{connectionName}}</h1>
+        </header>
+        <ion-content class="has-header">
+            <ion-list>
+                <ion-item class="item-icon-left energized-bg" ng-click="changeDatabase()">
+                    <i class="icon ion-android-storage"></i>
+                    <strong>{{ databaseName }}</strong>
 
-  <ion-side-menu side="left">
-    <header class="bar bar-header bar-dark" ng-click="changeConnection()">
-      <button class="button button-icon ion-wifi"></button>
-      <h1 class="title">{{connectionName}}</h1>
-    </header>
-    <ion-content class="has-header">
-      <ion-list>
-        <ion-item class="item-icon-left energized-bg" ng-click="changeDatabase()">
-          <i class="icon ion-android-storage"></i>
-          <strong>{{ databaseName }}</strong>
-          <p ng-show="!singleDatabase">(touch to change)</p>
-          <!--<p ng-show="singleDatabase">&nbsp;</p>-->
-        </ion-item>
-        <ion-item class="item-icon-right"
-                  ui-sref-active="active"
-                  ui-sref="app.documents({ tag: '' })" menu-close>
-          All documents
-          <span ng-show="totalDocuments">({{totalDocuments}})</span>
-          <i class="icon ion-ios7-arrow-forward stable"></i>
-        </ion-item>
-        <ion-item class="item-icon-right"
-                  ng-repeat="entity in entities"
-                  ui-sref-active="active"
-                  ui-sref="app.documents({ tag: '{{entity.name}}' })"
-                  menu-close>
-          &nbsp;{{entity.name }}
-          <span ng-show="entity.totalResults">({{entity.totalResults}})</span>
-          <i class="icon ion-ios7-arrow-forward stable"></i>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-side-menu>
+                    <p ng-show="!singleDatabase">(touch to change)</p>
+                </ion-item>
+                <ion-item class="item-icon-right"
+                          ui-sref-active="active"
+                          ui-sref="app.documents({ tag: '' })" menu-close>
+                    All documents
+                    <span ng-show="totalDocuments">({{totalDocuments}})</span>
+                    <i class="icon ion-ios7-arrow-forward stable"></i>
+                </ion-item>
+                <ion-item class="item-icon-right"
+                          ng-repeat="entity in entities"
+                          ui-sref-active="active"
+                          ui-sref="app.documents({ tag: '{{entity.name}}' })"
+                          menu-close>
+                    &nbsp;{{entity.name }}
+                    <span ng-show="entity.totalResults">({{entity.totalResults}})</span>
+                    <i class="icon ion-ios7-arrow-forward stable"></i>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-side-menu>
 </ion-side-menus>
