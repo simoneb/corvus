@@ -3,10 +3,10 @@ angular.module('corvus.directives', [])
       return {
         require: 'ngModel',
         link: function (scope, elm, attrs, ctrl) {
-          var check = scope[attrs['uniqueConnection']];
+          ctrl.$parsers.unshift(function (viewValue) {
+            var originalName = scope.$eval(attrs['uniqueConnection']);
 
-          if (check) {
-            ctrl.$parsers.unshift(function (viewValue) {
+            if (!originalName || originalName !== viewValue) {
               if (Connections.get(viewValue)) {
                 ctrl.$setValidity('uniqueConnection', false);
                 return undefined;
@@ -14,8 +14,8 @@ angular.module('corvus.directives', [])
                 ctrl.$setValidity('uniqueConnection', true);
                 return viewValue;
               }
-            });
-          }
+            }
+          });
         }
       }
     });

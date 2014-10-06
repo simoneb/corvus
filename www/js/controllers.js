@@ -3,6 +3,7 @@ angular.module('corvus.controllers', [])
     .controller('EditConnectionCtrl', function ($scope, $state, $q, $window, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
       var name = $stateParams.name;
 
+      $scope.originalName = name;
       $scope.create = !name;
       $scope.formHolder = {};
 

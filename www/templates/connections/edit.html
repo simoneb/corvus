@@ -1,53 +1,59 @@
 <ion-view title="{{titlePrefix}} Connection">
-  <ion-nav-buttons side="right">
-    <button class="button button-clear" ng-click="remove()">
-      <i ng-show="!create" class="icon ion-trash-a"></i>
-    </button>
-  </ion-nav-buttons>
-  <ion-content class="has-header">
-    <form name="formHolder.form">
-      <ion-list>
-        <ion-item class="item-input item-stacked-label">
-          <span class="input-label">Name</span>
-          <input type="text" name="name" required unique-connection="create" ng-model="connection.name">
-          <span ng-show="formHolder.form.name.$invalid && formHolder.form.name.$error.uniqueConnection">
-            A connection with the same name already exists
-          </span>
-        </ion-item>
-        <ion-item class="item-input item-stacked-label">
-          <span class="input-label">Url</span>
-          <input type="url" name="url" required ng-model="connection.url">
-        </ion-item>
-        <ion-item class="item-input item-stacked-label">
-          <span class="input-label">Database</span>
-          <input type="text" ng-model="connection.database"
-                 placeholder="(leave empty to access all databases)">
-        </ion-item>
-        <ion-item class="item-divider">Authentication</ion-item>
-        <ion-item class="item item-input item-select">
-          <div class="input-label">Type</div>
-          <select ng-model="connection.authenticationType">
-            <option value="">Anonymous</option>
-            <option value="apiKey">Api Key</option>
-          </select>
-        </ion-item>
-        <ion-item class="item-input item-stacked-label"
-                  ng-if="connection.authenticationType === 'apiKey'">
-          <span class="input-label">Api Key</span>
-          <input type="text" required ng-model="connection.apiKey">
-        </ion-item>
-      </ion-list>
-    </form>
-  </ion-content>
-  <ion-footer-bar>
-    <a class="button button-stable"
-       ng-disabled="formHolder.form.url.$error.required || formHolder.form.url.$error.url"
-       ng-click="test()">
-      Test Connection
-    </a>
-    <a class="button button-positive icon-left ion-android-checkmark"
-       ng-disabled="formHolder.form.$invalid" ng-click="save()">
-      &nbsp;{{buttonPrefix}} Connection
-    </a>
-  </ion-footer-bar>
+    <ion-nav-buttons side="right">
+        <button class="button button-clear" ng-click="remove()">
+            <i ng-show="!create" class="icon ion-trash-a"></i>
+        </button>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+        <form name="formHolder.form" class="css-form">
+            <ion-list>
+                <ion-item class="item-input item-stacked-label">
+                    <span class="input-label">Name</span>
+                    <input type="text" name="name" required unique-connection="originalName"
+                           ng-model="connection.name">
+
+                    <small class="assertive" ng-show="formHolder.form.name.$error.uniqueConnection">
+                        A connection with the same name already exists
+                    </small>
+                </ion-item>
+                <ion-item class="item-input item-stacked-label">
+                    <span class="input-label">Url</span>
+                    <input type="url" name="url" required ng-model="connection.url">
+
+                    <small class="assertive" ng-show="formHolder.form.url.$error.url">
+                        Wrong URI format
+                    </small>
+                </ion-item>
+                <ion-item class="item-input item-stacked-label">
+                    <span class="input-label">Database</span>
+                    <input type="text" ng-model="connection.database"
+                           placeholder="(leave empty to access all databases)">
+                </ion-item>
+                <ion-item class="item-divider">Authentication</ion-item>
+                <ion-item class="item item-input item-select">
+                    <div class="input-label">Type</div>
+                    <select ng-model="connection.authenticationType">
+                        <option value="">Anonymous</option>
+                        <option value="apiKey">Api Key</option>
+                    </select>
+                </ion-item>
+                <ion-item class="item-input item-stacked-label"
+                          ng-if="connection.authenticationType === 'apiKey'">
+                    <span class="input-label">Api Key</span>
+                    <input type="text" required ng-model="connection.apiKey">
+                </ion-item>
+            </ion-list>
+        </form>
+    </ion-content>
+    <ion-footer-bar>
+        <a class="button button-stable"
+           ng-disabled="formHolder.form.url.$invalid"
+           ng-click="test()">
+            Test Connection
+        </a>
+        <a class="button button-positive icon-left ion-android-checkmark"
+           ng-disabled="formHolder.form.$invalid" ng-click="save()">
+            &nbsp;{{buttonPrefix}} Connection
+        </a>
+    </ion-footer-bar>
 </ion-view>
