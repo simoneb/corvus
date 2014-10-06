@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.4">
+<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.5">
 
     <name>Corvus</name>
 
@@ -11,49 +11,49 @@
         Simone Busoli
     </author>
 
-    <content src="index.html" />
-    <access origin="*" />
+    <content src="index.html"/>
+    <access origin="*"/>
 
-    <gap:platform name="android" />
+    <gap:platform name="android"/>
 
-    <preference name="phonegap-version" value="3.6.3" />
+    <preference name="phonegap-version" value="3.6.3"/>
 
     <platform name="android">
-        <icon src="www/img/launcher-mdpi.png" density="ldpi" />
-        <icon src="www/img/launcher-mdpi.png" density="mdpi" />
-        <icon src="www/img/launcher-hdpi.png" density="hdpi" />
-        <icon src="www/img/launcher-xhdpi.png" density="xhdpi" />
-        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi" />
-        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi" />
+        <icon src="www/img/launcher-mdpi.png" density="ldpi"/>
+        <icon src="www/img/launcher-mdpi.png" density="mdpi"/>
+        <icon src="www/img/launcher-hdpi.png" density="hdpi"/>
+        <icon src="www/img/launcher-xhdpi.png" density="xhdpi"/>
+        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi"/>
+        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi"/>
     </platform>
 
-    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi" />
-    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi" />
-    <icon src="img/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi" />
-    <icon src="img/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi" />
-    <icon src="img/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi" />
-    <icon src="img/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi" />
+    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi"/>
+    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi"/>
+    <icon src="img/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi"/>
+    <icon src="img/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi"/>
+    <icon src="img/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi"/>
+    <icon src="img/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi"/>
 
     <!--<preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="5000" />-->
     <!--<preference name="auto-hide-splash-screen" value="false" />-->
 
-    <gap:plugin name="com.ionic.keyboard" />
-    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog" />
-    <gap:plugin name="nl.x-services.plugins.toast" />
-    <gap:plugin name="org.apache.cordova.console" />
-    <gap:plugin name="org.apache.cordova.dialogs" />
-    <gap:plugin name="com.mcm.plugins.androidinappbilling" />
-    <gap:plugin name="nl.x-services.plugins.actionsheet" />
-    <gap:plugin name="org.apache.cordova.inappbrowser" />
-    <gap:plugin name="org.apache.cordova.statusbar" />
+    <gap:plugin name="com.ionic.keyboard"/>
+    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog"/>
+    <gap:plugin name="nl.x-services.plugins.toast"/>
+    <gap:plugin name="org.apache.cordova.console"/>
+    <gap:plugin name="org.apache.cordova.dialogs"/>
+    <gap:plugin name="com.mcm.plugins.androidinappbilling"/>
+    <gap:plugin name="nl.x-services.plugins.actionsheet"/>
+    <gap:plugin name="org.apache.cordova.inappbrowser"/>
+    <gap:plugin name="org.apache.cordova.statusbar"/>
 
     <!-- from the ionic template -->
-    <preference name="webviewbounce" value="false" />
-    <preference name="UIWebViewBounce" value="false" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackupWebStorage" value="none" />
+    <preference name="webviewbounce" value="false"/>
+    <preference name="UIWebViewBounce" value="false"/>
+    <preference name="DisallowOverscroll" value="true"/>
+    <preference name="BackupWebStorage" value="none"/>
     <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" onload="true" />
+        <param name="ios-package" value="CDVStatusBar" onload="true"/>
     </feature>
 </widget>
