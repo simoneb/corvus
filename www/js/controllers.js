@@ -1,7 +1,9 @@
 angular.module('corvus.controllers', [])
 
-    .controller('EditConnectionCtrl', function ($scope, $state, $q, $timeout, $window, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
-      var name = $stateParams.name;
+    .controller('EditConnectionCtrl',
+    function ($scope, $state, $q, $timeout, $stateParams, $ionicGesture, raven, Dialogs, Toast, Spinner, Connections) {
+      var name = $stateParams.name,
+          formElement = angular.element(document.getElementById('connectionForm'));
 
       $scope.originalName = name;
       $scope.create = !name;
@@ -61,19 +63,20 @@ angular.module('corvus.controllers', [])
       };
 
       $scope.save = function () {
-        var ravenClient = raven($scope.connection);
+        Spinner.show();
 
         checkServerVersion()
             .then(function (serverVersion) {
               $scope.connection.serverVersion = serverVersion;
               return raven($scope.connection);
             })
-            .then(function (ravenClient) {
-              return checkPurchase(ravenClient);
-            })
+            .then(checkPurchase)
             .then(function () {
               Connections.save($scope.connection, name);
               $state.go('connections.list');
+            })
+            .finally(function () {
+              Spinner.hide();
             });
       };
 
@@ -89,20 +92,20 @@ angular.module('corvus.controllers', [])
             });
       };
 
-      $scope.onLeftSwipe = function() {
-        $scope.leftSwipe = true;
+      $ionicGesture.on('swiperight', function () {
+        $scope.rightSwipe = true;
 
-        $timeout(function(){
-          $scope.leftSwipe = false;
+        $timeout(function () {
+          $scope.rightSwipe = false;
         }, 500);
-      };
+      }, formElement);
 
-      $scope.onRightSwipe = function() {
-        if($scope.leftSwipe) {
-          $scope.connection.url = 'https://kiwi.ravenhq.com';
-          $scope.connection.apiKey = '781ffb1c-a505-4485-8505-2f160d4820d2';
+      $ionicGesture.on('swipeleft', function () {
+        if ($scope.rightSwipe) {
+          $scope.connection = Connections.getDefaultConnection();
+          $scope.rightSwipe = false;
         }
-      };
+      }, formElement);
     })
 
     .controller('ListConnectionsCtrl', function ($scope, $state, Connections) {
@@ -125,7 +128,7 @@ angular.module('corvus.controllers', [])
         }
       }
 
-      $scope.isV3 = function(connection) {
+      $scope.isV3 = function (connection) {
         return /^3/.test(connection.serverVersion);
       };
     })

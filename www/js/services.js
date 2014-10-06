@@ -37,8 +37,7 @@ angular.module('corvus.services', [])
       };
 
       self.list = function () {
-        var item = store.getItem('connections');
-        return item && angular.fromJson(item) || [];
+        return angular.fromJson(store.getItem('connections') || '[]');
       };
 
       self.save = function (connection, oldName) {
@@ -61,6 +60,15 @@ angular.module('corvus.services', [])
           store.setItem('connections', angular.toJson(list));
         }
       };
+
+      self.getDefaultConnection = function () {
+        return angular.copy({
+          url: 'https://kiwi.ravenhq.com',
+          apiKey: '781ffb1c-a505-4485-8505-2f160d4820d2',
+          authenticationType: 'apiKey',
+          database: 'simoneb-test'
+        });
+      }
     })
     .factory('Dialogs', function ($cordovaDialogs, $ionicPopup) {
       if (navigator.notification) {
