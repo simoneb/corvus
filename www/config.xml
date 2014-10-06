@@ -12,7 +12,6 @@
     </author>
 
     <content src="index.html" />
-    <!--<icon src="art/launcher-hdpi.png" />-->
     <access origin="*" />
 
     <gap:platform name="android" />
