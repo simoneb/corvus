@@ -28,12 +28,12 @@
         <icon src="art/launcher-xxxhdpi.png" density="xxxhdpi" />
     </platform>
 
-    <icon src="art/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi" />
-    <icon src="art/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi" />
-    <icon src="art/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi" />
-    <icon src="art/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi" />
-    <icon src="art/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi" />
-    <icon src="art/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi" />
+    <icon src="../art/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi" />
+    <icon src="../art/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi" />
+    <icon src="../art/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi" />
+    <icon src="../art/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi" />
+    <icon src="../art/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi" />
+    <icon src="../art/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi" />
 
     <!--<preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="5000" />-->
