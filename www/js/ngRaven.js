@@ -224,7 +224,7 @@ function RavenClient(options, $injector, $http, $q) {
   this.getDocument = function (documentId, params) {
     return get('/docs/' + documentId, params);
   };
-  this.saveDocument = function(documentId, documentMetadata, data, params) {
+  this.saveDocument = function (documentId, documentMetadata, data, params) {
     return put('/docs/' + documentId, data, {
       'Raven-Entity-Name': documentMetadata['Raven-Entity-Name'],
       'Raven-Clr-Type': documentMetadata['Raven-Clr-Type'],
@@ -322,9 +322,13 @@ angular.module('ngRaven', [])
 
       self.$get = function ($injector, $http, $q) {
         return function (options) {
-          return new RavenClient(
-              angular.extend({}, self.defaults, options),
-              $injector, $http, $q);
+          var localOptions = angular.extend({}, self.defaults, options);
+
+          if (/^3/.test(options.serverVersion)) {
+            return new RavenClient(localOptions, $injector, $http, $q);
+          }
+
+          return new RavenClient(localOptions, $injector, $http, $q);
         };
       };
     });

@@ -1,6 +1,6 @@
 angular.module('corvus.controllers', [])
 
-    .controller('EditConnectionCtrl', function ($scope, $state, $q, $window, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
+    .controller('EditConnectionCtrl', function ($scope, $state, $q, $timeout, $window, $stateParams, raven, Dialogs, Toast, Spinner, Connections) {
       var name = $stateParams.name;
 
       $scope.originalName = name;
@@ -16,20 +16,10 @@ angular.module('corvus.controllers', [])
         $scope.buttonPrefix = $scope.titlePrefix = 'Create';
       }
 
-      function checkServerVersion(ravenClient) {
-        return ravenClient.getBuildVersion()
+      function checkServerVersion() {
+        return raven($scope.connection).getBuildVersion()
             .then(function (res) {
-              if (/^3/.test(res.data.BuildVersion)) {
-                Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
-                    'RavenDB version not supported', ['No', 'Yes'])
-                    .then(function (buttonIndex) {
-                      if (buttonIndex === 2) {
-                        $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
-                      }
-                    });
-
-                return $q.reject(res);
-              }
+              return res.data.BuildVersion;
             });
       }
 
@@ -44,23 +34,26 @@ angular.module('corvus.controllers', [])
       }
 
       $scope.test = function () {
-        var ravenClient = raven($scope.connection);
         Spinner.show();
 
-        ravenClient.getUser({ ignoreErrors: 404 })
-            .then(function () {
-              return checkServerVersion(ravenClient)
+        checkServerVersion()
+            .then(function (serverVersion) {
+              $scope.connection.serverVersion = serverVersion;
+              return raven($scope.connection);
+            })
+            .then(function (ravenClient) {
+              return ravenClient.getUser({ ignoreErrors: 404 })
                   .then(function () {
                     return checkPurchase(ravenClient);
-                  });
-            }, function (res) {
-              if (res.status === 404)
-                Toast.showShortBottom('Wrong url or database name (status 404)');
+                  }, function (res) {
+                    if (res.status === 404)
+                      Toast.showShortBottom('Wrong url or database name (status 404)');
 
-              return $q.reject(res);
-            })
-            .then(function () {
-              Toast.showShortCenter('Everything alright!');
+                    return $q.reject(res);
+                  })
+                  .then(function () {
+                    Toast.showShortCenter('Everything alright!');
+                  });
             })
             .finally(function () {
               Spinner.hide();
@@ -70,8 +63,12 @@ angular.module('corvus.controllers', [])
       $scope.save = function () {
         var ravenClient = raven($scope.connection);
 
-        checkServerVersion(ravenClient)
-            .then(function () {
+        checkServerVersion()
+            .then(function (serverVersion) {
+              $scope.connection.serverVersion = serverVersion;
+              return raven($scope.connection);
+            })
+            .then(function (ravenClient) {
               return checkPurchase(ravenClient);
             })
             .then(function () {
@@ -90,6 +87,21 @@ angular.module('corvus.controllers', [])
                 });
               }
             });
+      };
+
+      $scope.onLeftSwipe = function() {
+        $scope.leftSwipe = true;
+
+        $timeout(function(){
+          $scope.leftSwipe = false;
+        }, 500);
+      };
+
+      $scope.onRightSwipe = function() {
+        if($scope.leftSwipe) {
+          $scope.connection.url = 'https://kiwi.ravenhq.com';
+          $scope.connection.apiKey = '781ffb1c-a505-4485-8505-2f160d4820d2';
+        }
       };
     })
 
@@ -112,6 +124,10 @@ angular.module('corvus.controllers', [])
           $state.go('databases', { connectionName: connection.name })
         }
       }
+
+      $scope.isV3 = function(connection) {
+        return /^3/.test(connection.serverVersion);
+      };
     })
 
     .controller('DatabasesCtrl', function ($scope, $stateParams, Toast, ravenClient) {

@@ -7,7 +7,7 @@
             <ion-item ng-repeat="connection in connections | orderBy:'name'"
                       ng-click="selectConnection(connection)"
                       class="item-icon-right">
-                <h2>{{connection.name}}</h2>
+                <h2>{{connection.name}} <sup class="positive" ng-if="isV3(connection)">v3</sup></h2>
 
                 <p ng-show="connection.database">{{connection.database}}</p>
 
