@@ -1,10 +1,5 @@
-function RavenClient(options, $injector, $http, $q) {
+function HttpClient($http, $q, $injector, options) {
   var authData;
-
-  if (options.database) {
-    options.url = options.url + '/databases/' + options.database;
-    delete options.database;
-  }
 
   function http(method, path, config) {
     function callImmediate() {
@@ -22,7 +17,7 @@ function RavenClient(options, $injector, $http, $q) {
         url: options.url + path,
         headers: headers,
         params: {
-          //noCache: Date.now()
+          noCache: Date.now()
         }
       }, config));
     }
@@ -67,6 +62,18 @@ function RavenClient(options, $injector, $http, $q) {
       return _.map(dict, function (value, key) {
         return key + '=' + value;
       }).join(',');
+    }
+
+    function parseAuthData(data) {
+      return _.compact(data.split(',')).reduce(function (acc, item) {
+        var items = item.split('=');
+
+        var value = items.length > 2 ? items.slice(1).join('=') : items[1];
+
+        acc[items[0].trim()] = (value || '').trim();
+
+        return acc;
+      }, {});
     }
 
     function authenticateWithEncryption(oauthSource, cryptoData) {
@@ -120,18 +127,6 @@ function RavenClient(options, $injector, $http, $q) {
           challenge: challenge
         });
       });
-    }
-
-    function parseAuthData(data) {
-      return _.compact(data.split(',')).reduce(function (acc, item) {
-        var items = item.split('=');
-
-        var value = items.length > 2 ? items.slice(1).join('=') : items[1];
-
-        acc[items[0].trim()] = (value || '').trim();
-
-        return acc;
-      }, {});
     }
 
     function authenticateWithLegacyApiKey(oauthSource) {
@@ -195,21 +190,32 @@ function RavenClient(options, $injector, $http, $q) {
     return config;
   }
 
-  function get(path, params) {
+  this.get = function (path, params) {
     return http('GET', path, createConfig(params));
-  }
+  };
 
-  function post(path, data, params) {
+  this.post = function (path, data, params) {
     return http('POST', path, angular.extend({ data: data }, createConfig(params)));
-  }
+  };
 
-  function put(path, data, headers, params) {
+  this.put = function (path, data, headers, params) {
     return http('PUT', path, angular.extend({ data: data, headers: headers }, createConfig(params)));
+  };
+
+  this.del = function (path, params) {
+    return http('DELETE', path, createConfig(params));
+  };
+}
+
+function RavenClient($injector, $rootScope, options) {
+  options = angular.copy(options);
+
+  if (options.database) {
+    options.url = options.url + '/databases/' + options.database;
+    delete options.database;
   }
 
-  function del(path, params) {
-    return http('DELETE', path, createConfig(params));
-  }
+  var http = $injector.instantiate(HttpClient, { options: options });
 
   function buildQuery(queryObj) {
     return _.reduce(queryObj,
@@ -219,21 +225,33 @@ function RavenClient(options, $injector, $http, $q) {
   }
 
   this.getDatabases = function (params) {
-    return get('/databases', params);
+    return http.get('/databases', params);
   };
+
   this.getDocument = function (documentId, params) {
-    return get('/docs/' + documentId, params);
+    return http.get('/docs/' + documentId, params);
   };
-  this.saveDocument = function (documentId, documentMetadata, data, params) {
-    return put('/docs/' + documentId, data, {
-      'Raven-Entity-Name': documentMetadata['Raven-Entity-Name'],
-      'Raven-Clr-Type': documentMetadata['Raven-Clr-Type'],
-      'If-None-Match': documentMetadata['@etag']
-    }, params);
+
+  this.saveDocument = function (id, metadata, data, params) {
+    return http.put('/docs/' + id, data, {
+      'Raven-Entity-Name': metadata['Raven-Entity-Name'],
+      'Raven-Clr-Type': metadata['Raven-Clr-Type'],
+      'If-None-Match': metadata['@etag']
+    }, params)
+        .then(function (res) {
+          $rootScope.$broadcast('raven:document:saved', id, metadata, data, res);
+          return res;
+        });
   };
-  this.deleteDocument = function (documentId, params) {
-    return del('/docs/' + documentId, params);
+
+  this.deleteDocument = function (id, params) {
+    return http.del('/docs/' + id, params)
+        .then(function (res) {
+          $rootScope.$broadcast('raven:document:deleted', id, res);
+          return res;
+        });
   };
+
   /*
    * start
    * pageSize
@@ -242,57 +260,69 @@ function RavenClient(options, $injector, $http, $q) {
    * exclude
    * */
   this.getDocuments = function (params) {
-    return get('/docs', params);
+    return http.get('/docs', params);
   };
+
   this.getAlerts = function (params) {
-    return get('/docs/Raven/Alerts', params);
+    return http.get('/docs/Raven/Alerts', params);
   };
+
   this.queryIndex = function (indexName, query, params) {
-    return get('/indexes/' + indexName, _.merge({ 'query': buildQuery(query) }, params));
+    return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery(query) }, params));
   };
+
   /*
    * metadata-only true/false
    * */
   this.queries = function (params) {
-    return get('/queries', params);
+    return http.get('/queries', params);
   };
+
   /*
    field
    fromValue
    pageSize
    */
   this.getTerms = function (indexName, params) {
-    return get('/terms/' + indexName, params);
+    return http.get('/terms/' + indexName, params);
   };
+
   /*
    parallel: yes / no
    * */
   this.multiGet = function (requests, parallel, params) {
-    return post('/multi_get', requests, angular.extend({ parallel: parallel ? 'yes' : 'no' }, params));
+    return http.post('/multi_get', requests, angular.extend({ parallel: parallel ? 'yes' : 'no' }, params));
   };
+
   this.getUser = function (params) {
-    return get('/debug/user-info', params);
+    return http.get('/debug/user-info', params);
   };
+
   this.getConfig = function (params) {
-    return get('/debug/config', params);
+    return http.get('/debug/config', params);
   };
+
   this.getStats = function (params) {
-    return get('/stats', params)
+    return http.get('/stats', params)
   };
+
   /*
    * definition yes / no
    * */
   this.getIndex = function (indexName, params) {
-    return get('/indexes/' + indexName, params);
+    return http.get('/indexes/' + indexName, params);
   };
+
   this.getTransformer = function (transformerName, params) {
-    return get('/transformers/' + transformerName, params);
+    return http.get('/transformers/' + transformerName, params);
   };
+
   this.getBuildVersion = function (params) {
-    return get('/build/version', params);
+    return http.get('/build/version', params);
   };
+
   this.getLicenseStatus = function (params) {
-    return get('/license/status', params);
+    return http.get('/license/status', params);
   };
 
   /*
@@ -307,7 +337,7 @@ function RavenClient(options, $injector, $http, $q) {
    }
    * */
   this.createDatabase = function (databaseName, data, params) {
-    return put('/admin/databases/' + databaseName, data, {}, params);
+    return http.put('/admin/databases/' + databaseName, data, {}, params);
   }
 }
 
@@ -325,10 +355,10 @@ angular.module('ngRaven', [])
           var localOptions = angular.extend({}, self.defaults, options);
 
           if (/^3/.test(options.serverVersion)) {
-            return new RavenClient(localOptions, $injector, $http, $q);
+            return $injector.instantiate(RavenClient, { options: localOptions });
           }
 
-          return new RavenClient(localOptions, $injector, $http, $q);
+          return $injector.instantiate(RavenClient, { options: localOptions });
         };
       };
     });

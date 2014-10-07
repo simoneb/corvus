@@ -41,6 +41,8 @@ angular.module('corvus.services', [])
       };
 
       self.save = function (connection, oldName) {
+        if(!connection.name || !connection.url) return;
+
         var index = findIndex(oldName || connection.name);
         var list = self.list(),
             insertIndex = index >= 0 ? index : list.length;
@@ -63,6 +65,7 @@ angular.module('corvus.services', [])
 
       self.getDefaultConnection = function () {
         return angular.copy({
+          name: 'ravenhq',
           url: 'https://kiwi.ravenhq.com',
           apiKey: '781ffb1c-a505-4485-8505-2f160d4820d2',
           authenticationType: 'apiKey',

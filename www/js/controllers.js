@@ -156,30 +156,38 @@ angular.module('corvus.controllers', [])
         $state.go('databases', { connectionName: connectionName });
       };
 
-      ravenClient.getStats().then(function (res) {
-        $scope.totalDocuments = res.data.CountOfDocuments;
+      $scope.$on('raven:document:deleted', function (event, documentId, res) {
+        updateDocumentCounts();
       });
 
-      ravenClient.getTerms('Raven/DocumentsByEntityName', { field: 'Tag' })
-          .then(function (res) {
-            $scope.entities = res.data.map(function (coll) {
-              return {
-                name: coll,
-                totalResults: ''
-              }
-            });
+      function updateDocumentCounts() {
+        ravenClient.getStats().then(function (res) {
+          $scope.totalDocuments = res.data.CountOfDocuments;
+        });
 
-            ravenClient.multiGet(res.data.map(function (coll) {
-              return {
-                Query: '&query=Tag:' + coll,
-                Url: '/indexes/Raven/DocumentsByEntityName'
-              }
-            })).then(function (res) {
-              res.data.forEach(function (data, index) {
-                $scope.entities[index].totalResults = data.Result.TotalResults
+        ravenClient.getTerms('Raven/DocumentsByEntityName', { field: 'Tag' })
+            .then(function (res) {
+              $scope.entities = res.data.map(function (coll) {
+                return {
+                  name: coll,
+                  totalResults: ''
+                }
               });
-            })
-          });
+
+              ravenClient.multiGet(res.data.map(function (coll) {
+                return {
+                  Query: 'query=Tag:' + coll,
+                  Url: '/indexes/Raven/DocumentsByEntityName'
+                }
+              })).then(function (res) {
+                res.data.forEach(function (data, index) {
+                  $scope.entities[index].totalResults = data.Result.TotalResults
+                });
+              })
+            });
+      }
+
+      updateDocumentCounts();
     })
 
     .controller('DocumentsCtrl', function ($scope, $state, $stateParams, $ionicPopover, ravenClient) {
@@ -292,39 +300,41 @@ angular.module('corvus.controllers', [])
         });
       };
 
-      ravenClient.getDocument($stateParams.id, { ignoreErrors: 404 })
-          .then(function (res) {
-            var referencesRegex = /:\s?"(\w+\/\d+)"/g,
-                references = [],
-                data = angular.toJson(res.data),
-                match;
+      function loadWholeDocument() {
+        ravenClient.getDocument($stateParams.id, { ignoreErrors: 404 })
+            .then(function (res) {
+              var referencesRegex = /:\s?"(\w+\/\d+)"/g,
+                  references = [],
+                  data = angular.toJson(res.data),
+                  match;
 
-            do {
-              match = referencesRegex.exec(data);
-              if (match) references.push(match[1]);
-            } while (match);
+              do {
+                match = referencesRegex.exec(data);
+                if (match) references.push(match[1]);
+              } while (match);
 
-            $scope.document = res.data;
-            $scope.jsonDocument = { value: angular.toJson(res.data, true) };
-            $scope.references = references;
+              $scope.document = res.data;
+              $scope.jsonDocument = { value: angular.toJson(res.data, true) };
+              $scope.references = references;
 
-            $scope.$watch('jsonDocument.value', function (newVal) {
-              $scope.numberOfLines = newVal.split('\n').length * 1.5;
-            });
-          }, function (res) {
-            if (res.status === 404) {
-              Toast.showShortBottom('This document does not exist').finally(function () {
-                $ionicNavBarDelegate.back();
+              $scope.$watch('jsonDocument.value', function (newVal) {
+                $scope.numberOfLines = newVal.split('\n').length * 1.5;
               });
-            }
-          });
+            }, function (res) {
+              if (res.status === 404) {
+                Toast.showShortBottom('This document does not exist').finally(function () {
+                  $ionicNavBarDelegate.back();
+                });
+              }
+            });
 
-      ravenClient
-          .queries({ 'metadata-only': true, id: $scope.documentId })
-          .then(function (res) {
-            var result = res.data.Results[0];
-            $scope.metadata = result && result['@metadata'];
-          });
+        ravenClient
+            .queries({ 'metadata-only': true, id: $scope.documentId })
+            .then(function (res) {
+              var result = res.data.Results[0];
+              $scope.metadata = result && result['@metadata'];
+            });
+      }
 
       $scope.remove = function () {
         Dialogs.confirm('Are you sure you want to delete this document?')
@@ -333,7 +343,7 @@ angular.module('corvus.controllers', [])
                 Spinner.show();
 
                 ravenClient.deleteDocument($scope.documentId)
-                    .then(function () {
+                    .then(function (res) {
                       Toast.showShortCenter('Document ' + $scope.documentId + ' deleted')
                           .finally(function () {
                             $ionicNavBarDelegate.back();
@@ -360,25 +370,34 @@ angular.module('corvus.controllers', [])
       };
 
       $scope.save = function () {
-        Dialogs.confirm('Are you sure you want to save your changes?').then(function (result) {
-          if (result === 1) {
-            Spinner.show();
-            ravenClient.saveDocument($scope.documentId,
-                $scope.metadata,
-                angular.fromJson($scope.jsonDocument.value), { ignoreErrors: 409 })
-                .then(function () {
-                  Toast.showShortCenter('Document ' + $scope.documentId + ' updated');
-                  $scope.editable = false;
-                  $scope.hasChanged = false;
-                }, function (res) {
-                  if (res.status === 409) {
-                    Toast.showShortBottom('The document was changed on the server, please reload');
-                  }
-                })
-                .finally(function () {
-                  Spinner.hide();
-                });
-          }
-        });
+        Dialogs.confirm('Are you sure you want to save your changes?')
+            .then(function (result) {
+              if (result === 1) {
+                Spinner.show();
+
+                ravenClient.saveDocument($scope.documentId,
+                    $scope.metadata,
+                    angular.fromJson($scope.jsonDocument.value), { ignoreErrors: 409 })
+                    .then(function () {
+                      Toast.showShortCenter('Document ' + $scope.documentId + ' updated');
+                      $scope.editable = false;
+                      $scope.hasChanged = false;
+                    }, function (res) {
+                      if (res.status === 409) {
+                        Dialogs.confirm('The document was changed on the server, reload?', 'Change conflict')
+                            .then(function (buttonIndex) {
+                              if (buttonIndex === 1) {
+                                loadWholeDocument();
+                              }
+                            });
+                      }
+                    })
+                    .finally(function () {
+                      Spinner.hide();
+                    });
+              }
+            });
       };
+
+      loadWholeDocument();
     });
