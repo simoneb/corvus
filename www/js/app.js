@@ -140,6 +140,24 @@ angular.module('corvusApp',
               }
             }
           })
+          .state('app.indexes', {
+            url: '/indexes',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/indexes.html',
+                controller: 'IndexesCtrl'
+              }
+            }
+          })
+          .state('app.index', {
+            url: '/indexes/*name',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/index.html',
+                controller: 'IndexCtrl'
+              }
+            }
+          })
           .state('app.document', {
             url: "/document/*id",
             views: {

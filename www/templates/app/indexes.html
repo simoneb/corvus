@@ -1,0 +1,12 @@
+<ion-view title="Indexes">
+    <ion-content class="has-header">
+        <ion-list ng-repeat="(entity, indexes) in indexesByEntityName">
+            <ion-item class="item-divider">{{entity || 'Other'}} ({{indexes.length}})</ion-item>
+            <ion-item ng-repeat="index in indexes"
+                      ui-sref="app.index({ name: index.Name })">
+                {{index.Name}}
+                <p class="item-note">{{index.DocsCount}} entries</p>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

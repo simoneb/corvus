@@ -416,4 +416,10 @@ angular.module('corvus.controllers', [])
       };
 
       loadWholeDocument();
+    })
+
+    .controller('IndexesCtrl', function ($scope, ravenClient) {
+      ravenClient.getStats().then(function(res){
+        $scope.indexesByEntityName = _.groupBy(res.data.Indexes, 'ForEntityName');
+      })
     });
