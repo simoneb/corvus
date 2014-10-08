@@ -22,11 +22,21 @@
 
                     <p ng-show="!singleDatabase">(touch to change)</p>
                 </ion-item>
+                <ion-item class="item-divider">
+                    Documents
+                </ion-item>
                 <ion-item class="item-icon-right"
                           ui-sref-active="active"
                           ui-sref="app.documents({ tag: '' })" menu-close>
-                    All documents
+                    All
                     <span ng-show="totalDocuments">({{totalDocuments}})</span>
+                    <i class="icon ion-ios7-arrow-forward stable"></i>
+                </ion-item>
+                <ion-item class="item-icon-right"
+                          ui-sref-active="active"
+                          ui-sref="app.systemDocuments"
+                          menu-close>
+                    &nbsp;System documents
                     <i class="icon ion-ios7-arrow-forward stable"></i>
                 </ion-item>
                 <ion-item class="item-icon-right"

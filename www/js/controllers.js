@@ -165,6 +165,18 @@ angular.module('corvus.controllers', [])
           $scope.totalDocuments = res.data.CountOfDocuments;
         });
 
+        ravenClient.getFacets('Raven/DocumentsByEntityName', { facets: [{ Name: 'Tag' }] })
+            .then(function (res) {
+              $scope.entities = res.data.Results.Tag.Values.map(function (v) {
+                return {
+                  name: v.Range,
+                  totalResults: v.Hits
+                };
+              });
+            });
+
+        return;
+
         ravenClient.getTerms('Raven/DocumentsByEntityName', { field: 'Tag' })
             .then(function (res) {
               $scope.entities = res.data.map(function (coll) {
@@ -190,10 +202,10 @@ angular.module('corvus.controllers', [])
       updateDocumentCounts();
     })
 
-    .controller('DocumentsCtrl', function ($scope, $state, $stateParams, $ionicPopover, ravenClient) {
+    .controller('DocumentsCtrl', function ($scope, system, $state, $stateParams, $ionicPopover, ravenClient) {
       var pageSize = 10;
 
-      $scope.title = $stateParams.tag || 'Documents';
+      $scope.title = $stateParams.tag || system ? 'System' : 'Documents';
       $scope.start = 0;
       $scope.documents = [];
 
@@ -237,15 +249,19 @@ angular.module('corvus.controllers', [])
         var params = { start: $scope.start, pageSize: pageSize };
 
         if ($stateParams.tag) {
-          ravenClient.queryIndex('Raven/DocumentsByEntityName', { Tag: $stateParams.tag }, params)
+          return ravenClient.queryIndex('Raven/DocumentsByEntityName', { Tag: $stateParams.tag }, params)
               .then(function (res) {
                 showDocuments(res.data.Results);
               }, noDocuments);
-        } else {
-          ravenClient.getDocuments(params).then(function (res) {
-            showDocuments(res.data);
-          }, noDocuments);
         }
+
+        if (system) {
+          angular.extend(params, { startsWith: 'Raven' });
+        }
+
+        ravenClient.getDocuments(params).then(function (res) {
+          showDocuments(res.data);
+        }, noDocuments);
       }
     })
 

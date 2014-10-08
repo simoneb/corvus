@@ -121,7 +121,22 @@ angular.module('corvusApp',
             views: {
               'menuContent': {
                 templateUrl: 'templates/app/documents.html',
-                controller: 'DocumentsCtrl'
+                controller: 'DocumentsCtrl',
+                resolve: {
+                  system: function() { return false; }
+                }
+              }
+            }
+          })
+          .state('app.systemDocuments', {
+            url: "/systemDocuments",
+            views: {
+              'menuContent': {
+                templateUrl: 'templates/app/documents.html',
+                controller: 'DocumentsCtrl',
+                resolve: {
+                  system: function() { return true; }
+                }
               }
             }
           })

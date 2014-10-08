@@ -428,6 +428,10 @@ function RavenClient($injector, $rootScope, options) {
    * @param {object[]} [params.facets] Example: [{"Name":"Tag"}]
    * */
   this.getFacets = function (indexName, params) {
+    if(params && params.facets) {
+      params.facets = [params.facets];
+    }
+
     return http.get('/facets/' + indexName, params);
   };
 }
