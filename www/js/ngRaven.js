@@ -224,14 +224,42 @@ function RavenClient($injector, $rootScope, options) {
         }, '').substr(1);
   }
 
+  /**
+   * Gets the databases on the server
+   * @param {object=} params Arguments to pass on the query string
+   * @param {number} [params.start] Index of first result to return
+   * @param {number} [params.pageSize] Maximum number of results to return
+   * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
+   * */
   this.getDatabases = function (params) {
     return http.get('/databases', params);
   };
 
-  this.getDocument = function (documentId, params) {
-    return http.get('/docs/' + documentId, params);
+  /**
+   * Gets the file systems on the server
+   * @param {object=} params Arguments to pass on the query string
+   * @param {number} [params.start] Index of first result to return
+   * @param {number} [params.pageSize] Maximum number of results to return
+   * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
+   * */
+  this.getFileSystems = function () {
+    return http.get('/fs');
   };
 
+  /**
+   * Retrieves a document by its id
+   * @param {string} id The id of the document
+   * */
+  this.getDocument = function (id, params) {
+    return http.get('/docs/' + id, params);
+  };
+
+  /**
+   * Saves a document
+   * @param {string} id The id of the document
+   * @param {object} metadata The metadata of the document
+   * @param {object} data The contents of the document
+   * */
   this.saveDocument = function (id, metadata, data, params) {
     return http.put('/docs/' + id, data, {
       'Raven-Entity-Name': metadata['Raven-Entity-Name'],
@@ -252,12 +280,14 @@ function RavenClient($injector, $rootScope, options) {
         });
   };
 
-  /*
-   * start
-   * pageSize
-   * metadata-only true | false?
-   * startsWith
-   * exclude
+  /**
+   * Gets a list of documents
+   * @param {object=} params Arguments to pass on the query string
+   * @param {number} [params.start] Index of first result to return
+   * @param {number} [params.pageSize] Maximum number of results to return
+   * @param {boolean} [params.metadata-only=false] Whether to return only metadata
+   * @param {string} [params.startsWith]
+   * @param {string} [params.exclude]
    * */
   this.getDocuments = function (params) {
     return http.get('/docs', params);
@@ -267,6 +297,14 @@ function RavenClient($injector, $rootScope, options) {
     return http.get('/docs/Raven/Alerts', params);
   };
 
+  /**
+   * Queries an index
+   * @param {string} indexName
+   * @param {string=} query
+   * @param {string=} params.sort Example: LastModified
+   * @param {string=} params.start
+   * @param {string=} params.pageSize
+   * */
   this.queryIndex = function (indexName, query, params) {
     return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery(query) }, params));
   };
@@ -294,16 +332,55 @@ function RavenClient($injector, $rootScope, options) {
     return http.post('/multi_get', requests, angular.extend({ parallel: parallel ? 'yes' : 'no' }, params));
   };
 
-  this.getUser = function (params) {
-    return http.get('/debug/user-info', params);
+  this.debug = {
+    getUserInfo: function (params) {
+      return http.get('/debug/user-info', params);
+    },
+    getMetrics: function (params) {
+      return http.get('/debug/metrics', params);
+    },
+    getConfig: function (params) {
+      return http.get('/debug/config', params);
+    },
+    getTasks: function (params) {
+      return http.get('/debug/tasks', params);
+    },
+    getQueries: function (params) {
+      return http.get('/debug/queries');
+    },
+    getChanges: function (params) {
+      return http.get('/debug/changes');
+    },
+    getCurrentlyIndexing: function (params) {
+      return http.get('/debug/currently-indexing');
+    },
+    getRoutes: function (params) {
+      return http.get('/debug/routes');
+    },
+    getRequestTracing: function (params) {
+      return http.get('/debug/request-tracing');
+    },
+    getSlowDocCounts: function (params) {
+      return http.get('/debug/sl0w-d0c-c0unts');
+    },
+    getIdentities: function (params) {
+      return http.get('/debug/identities');
+    },
+    getIndexingPerfStats: function (params) {
+      return http.get('/debug/indexing-perf-stats');
+    }
   };
 
-  this.getConfig = function (params) {
-    return http.get('/debug/config', params);
+  this.getLogs = function (params) {
+    return http.get('/logs', params);
   };
 
   this.getStats = function (params) {
     return http.get('/stats', params)
+  };
+
+  this.getRunningTasks = function (params) {
+    return http.get('/operations');
   };
 
   /*
@@ -338,7 +415,21 @@ function RavenClient($injector, $rootScope, options) {
    * */
   this.createDatabase = function (databaseName, data, params) {
     return http.put('/admin/databases/' + databaseName, data, {}, params);
-  }
+  };
+
+  // v3 only?
+  this.getSingleAuthToken = function () {
+    return http.get('/singleAuthToken');
+  };
+
+  /**
+   * Gets the facets
+   * @param {string} indexName The name of the index to query
+   * @param {object[]} [params.facets] Example: [{"Name":"Tag"}]
+   * */
+  this.getFacets = function (indexName, params) {
+    return http.get('/facets/' + indexName, params);
+  };
 }
 
 angular.module('ngRaven', [])

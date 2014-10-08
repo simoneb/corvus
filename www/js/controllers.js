@@ -44,7 +44,7 @@ angular.module('corvus.controllers', [])
               return raven($scope.connection);
             })
             .then(function (ravenClient) {
-              return ravenClient.getUser({ ignoreErrors: 404 })
+              return ravenClient.debug.getUserInfo({ ignoreErrors: 404 })
                   .then(function () {
                     return checkPurchase(ravenClient);
                   }, function (res) {
