@@ -122,7 +122,7 @@ angular.module('corvus.controllers', [])
 
       $scope.selectConnection = function (connection) {
         if (connection.database) {
-          $state.go('app.documents', { connectionName: connection.name, databaseName: connection.database });
+          $state.go('app.documents.user', { connectionName: connection.name, databaseName: connection.database });
         } else {
           $state.go('databases', { connectionName: connection.name })
         }
@@ -156,6 +156,10 @@ angular.module('corvus.controllers', [])
         $state.go('databases', { connectionName: connectionName });
       };
 
+    })
+
+    .controller('DocumentsSideMenuCtrl', function ($scope, ravenClient) {
+
       $scope.$on('raven:document:deleted', function (event, documentId, res) {
         updateDocumentCounts();
       });
@@ -173,29 +177,6 @@ angular.module('corvus.controllers', [])
                   totalResults: v.Hits
                 };
               });
-            });
-
-        return;
-
-        ravenClient.getTerms('Raven/DocumentsByEntityName', { field: 'Tag' })
-            .then(function (res) {
-              $scope.entities = res.data.map(function (coll) {
-                return {
-                  name: coll,
-                  totalResults: ''
-                }
-              });
-
-              ravenClient.multiGet(res.data.map(function (coll) {
-                return {
-                  Query: 'query=Tag:' + coll,
-                  Url: '/indexes/Raven/DocumentsByEntityName'
-                }
-              })).then(function (res) {
-                res.data.forEach(function (data, index) {
-                  $scope.entities[index].totalResults = data.Result.TotalResults
-                });
-              })
             });
       }
 
@@ -418,8 +399,30 @@ angular.module('corvus.controllers', [])
       loadWholeDocument();
     })
 
+    .controller('IndexesSideMenuCtrl', function ($scope) {
+
+    })
+    .controller('MergeIndexesCtrl', function ($scope, ravenClient) {
+      ravenClient.debug.suggestIndexMerge()
+          .then(function (res) {
+            $scope.unmergeables = res.data.Unmergables;
+            $scope.suggestions = res.data.Suggestions;
+            $scope.noUnmergeables = !Object.keys(res.data.Unmergables).length;
+            $scope.noSuggestions = !Object.keys(res.data.Suggestions).length;
+          });
+
+      ravenClient.getStats()
+          .then(function (res) {
+            $scope.indexes = res.data.Indexes;
+          });
+    })
     .controller('IndexesCtrl', function ($scope, ravenClient) {
-      ravenClient.getStats().then(function(res){
+      ravenClient.getStats().then(function (res) {
         $scope.indexesByEntityName = _.groupBy(res.data.Indexes, 'ForEntityName');
       })
+    })
+    .controller('IndexCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+      $scope.name = $stateParams.name;
+
+      Toast.showLongCenter('We\'re not quite there yet, but we\'re working on it!');
     });

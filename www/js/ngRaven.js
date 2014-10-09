@@ -368,6 +368,9 @@ function RavenClient($injector, $rootScope, options) {
     },
     getIndexingPerfStats: function (params) {
       return http.get('/debug/indexing-perf-stats');
+    },
+    suggestIndexMerge: function(params) {
+      return http.get('/debug/suggest-index-merge');
     }
   };
 

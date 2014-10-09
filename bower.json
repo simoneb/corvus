@@ -3,6 +3,7 @@
   "private": "true",
   "dependencies": {
     "lodash": "~2.4.1",
-    "ngCordova": "https://github.com/driftyco/ng-cordova.git#master"
+    "ngCordova": "https://github.com/driftyco/ng-cordova.git#master",
+    "moment": "~2.8.3"
   }
 }

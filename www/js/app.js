@@ -51,20 +51,20 @@ angular.module('corvusApp',
       });
 
       /*ravenProvider.defaults.unsupportedVersionHandlers.push(function ($window, $q, Dialogs, Toast) {
-        return function (res, version) {
-          if (/^3/.test(version)) {
-            Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
-                'RavenDB version not supported', ['No, Yes'])
-                .then(function (buttonIndex) {
-                  if (buttonIndex === 2) {
-                    $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
-                  }
-                });
-          } else {
-            Toast.showShortBottom('This version of RavenDB is not supported');
-          }
-        }
-      });*/
+       return function (res, version) {
+       if (/^3/.test(version)) {
+       Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
+       'RavenDB version not supported', ['No, Yes'])
+       .then(function (buttonIndex) {
+       if (buttonIndex === 2) {
+       $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
+       }
+       });
+       } else {
+       Toast.showShortBottom('This version of RavenDB is not supported');
+       }
+       }
+       });*/
 
       $stateProvider
 
@@ -85,7 +85,7 @@ angular.module('corvusApp',
           })
 
           .state('databases', {
-            url: '/databases/:connectionName',
+            url: '/:connectionName/databases',
             templateUrl: 'templates/databases.html',
             controller: 'DatabasesCtrl',
             resolve: {
@@ -96,7 +96,7 @@ angular.module('corvusApp',
           })
 
           .state('app', {
-            url: "/app/:connectionName/:databaseName",
+            url: "/:connectionName/:databaseName",
             abstract: true,
             templateUrl: "templates/app.html",
             controller: 'AppCtrl',
@@ -117,55 +117,69 @@ angular.module('corvusApp',
             }
           })
           .state('app.documents', {
+            abstract: true,
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/documentsSideMenu.html',
+                controller: 'DocumentsSideMenuCtrl'
+              },
+              mainContent: {
+                template: '<ui-view></ui-view>'
+              }
+            }
+          })
+          .state('app.documents.user', {
             url: "/documents/*tag",
-            views: {
-              'menuContent': {
-                templateUrl: 'templates/app/documents.html',
-                controller: 'DocumentsCtrl',
-                resolve: {
-                  system: function() { return false; }
-                }
+            templateUrl: 'templates/app/documents.html',
+            controller: 'DocumentsCtrl',
+            resolve: {
+              system: function () {
+                return false;
               }
             }
           })
-          .state('app.systemDocuments', {
+          .state('app.documents.system', {
             url: "/systemDocuments",
-            views: {
-              'menuContent': {
-                templateUrl: 'templates/app/documents.html',
-                controller: 'DocumentsCtrl',
-                resolve: {
-                  system: function() { return true; }
-                }
+            templateUrl: 'templates/app/documents.html',
+            controller: 'DocumentsCtrl',
+            resolve: {
+              system: function () {
+                return true;
               }
             }
           })
-          .state('app.indexes', {
-            url: '/indexes',
-            views: {
-              menuContent: {
-                templateUrl: 'templates/app/indexes.html',
-                controller: 'IndexesCtrl'
-              }
-            }
-          })
-          .state('app.index', {
-            url: '/indexes/*name',
-            views: {
-              menuContent: {
-                templateUrl: 'templates/app/index.html',
-                controller: 'IndexCtrl'
-              }
-            }
-          })
-          .state('app.document', {
+          .state('app.documents.document', {
             url: "/document/*id",
+            templateUrl: "templates/app/document.html",
+            controller: 'DocumentCtrl'
+          })
+
+          .state('app.indexes', {
+            abstract: true,
             views: {
-              'menuContent': {
-                templateUrl: "templates/app/document.html",
-                controller: 'DocumentCtrl'
+              menuContent: {
+                templateUrl: 'templates/app/indexesSideMenu.html',
+                controller: 'IndexesSideMenuCtrl'
+              },
+              mainContent: {
+                template: '<ui-view></ui-view>'
               }
             }
+          })
+          .state('app.indexes.merge', {
+            url: '/mergeIndexes',
+            templateUrl: 'templates/app/mergeIndexes.html',
+            controller: 'MergeIndexesCtrl'
+          })
+          .state('app.indexes.list', {
+            url: '/indexes',
+            templateUrl: 'templates/app/indexes.html',
+            controller: 'IndexesCtrl'
+          })
+          .state('app.indexes.index', {
+            url: '/indexes/*name',
+            templateUrl: 'templates/app/index.html',
+            controller: 'IndexCtrl'
           });
 
       $urlRouterProvider.otherwise('/connections/list');

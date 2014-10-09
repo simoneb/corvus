@@ -1,0 +1,34 @@
+<ion-view title="Merge Suggestions">
+    <ion-content class="has-header">
+        <div class="card">
+            <div class="item item-divider">Suggestions</div>
+            <div class="item" ng-repeat="(name, comment) in suggestions">
+                {{name}}
+                <p>{{comment}}</p>
+            </div>
+            <div class="item" ng-show="noSuggestions">
+                There are no merge suggestions
+            </div>
+        </div>
+        <div class="card">
+            <div class="item item-divider">Unmergeable</div>
+            <div class="item" ng-repeat="(name, comment) in unmergeables">
+                {{name}}
+                <p>{{comment}}</p>
+            </div>
+            <div class="item" ng-show="noUnmergeables">
+                There are no unmergeable indexes
+            </div>
+        </div>
+        <div class="card">
+            <div class="item item-divider">Not used recently</div>
+            <div class="item" ng-repeat="index in indexes | indexNotUsedBefore:1:'week'">
+                {{index.Name}}
+                <p>{{index.LastQueryTimestamp | fromNow }}</p>
+            </div>
+            <div class="item" ng-show="!(indexes | indexNotUsedBefore:1:'week').length">
+                All indexes have been used recently
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

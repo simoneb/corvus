@@ -19,3 +19,9 @@ www/lib/lodash/dist/lodash.underscore.js
 www/lib/ngCordova/dist/ng-cordova-mocks.js
 www/lib/ngCordova/dist/ng-cordova.js
 www/lib/ngCordova/dist/ng-cordova-mocks.min.js
+www/lib/moment/benchmarks
+www/lib/moment/locale
+www/lib/moment/min/locales.min.js
+www/lib/moment/min/locales.js
+www/lib/moment/min/moment-with-locales.min.js
+www/lib/moment/min/moment-with-locales.js

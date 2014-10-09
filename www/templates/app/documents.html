@@ -8,7 +8,7 @@
     <ion-list ng-if="layout.mode === 'List'">
       <ion-item
           ng-repeat="document in documents"
-          ui-sref="app.document({ id: document['@metadata']['@id'] })">
+          ui-sref="app.documents.document({ id: document['@metadata']['@id'] })">
         <p>{{document['@metadata']['@id']}}</p>
 
         <h3>{{ document | omitMetadata }}</h3>
@@ -16,7 +16,7 @@
     </ion-list>
     <div ng-if="layout.mode.indexOf('Cards') !== -1">
       <div class="card" ng-repeat="document in documents"
-           ui-sref="app.document({ id: document['@metadata']['@id'] })">
+           ui-sref="app.documents.document({ id: document['@metadata']['@id'] })">
         <div class="item item-divider" style="font-size: small">
           {{ document['@metadata']['@id'] }}
         </div>

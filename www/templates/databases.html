@@ -9,7 +9,7 @@
     <ion-content class="has-header">
         <ion-list>
             <ion-item ng-repeat="db in databases"
-                      ui-sref="app.documents({ connectionName: connectionName, databaseName: db })">
+                      ui-sref="app.documents.user({ connectionName: connectionName, databaseName: db })">
                 {{db}}
             </ion-item>
             <ion-item ng-if="databases && !databases.length" style="text-align: center">
