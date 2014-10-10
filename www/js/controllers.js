@@ -402,23 +402,47 @@ angular.module('corvus.controllers', [])
     .controller('IndexesSideMenuCtrl', function ($scope) {
 
     })
-    .controller('IndexStatsCtrl', function ($scope, ravenClient) {
+    .controller('IndexStatsCtrl', function ($scope, ravenClient, Dialogs, Toast, Spinner) {
       $scope.client = ravenClient;
 
-      if (ravenClient.isV3()) {
-        ravenClient.debug.suggestIndexMerge()
+      $scope.beforeValue = 1;
+      $scope.beforeMeasure = 'week';
+
+      function loadStats() {
+        if (ravenClient.isV3()) {
+          ravenClient.debug.suggestIndexMerge()
+              .then(function (res) {
+                $scope.unmergeables = res.data.Unmergables;
+                $scope.suggestions = res.data.Suggestions;
+                $scope.noUnmergeables = !Object.keys(res.data.Unmergables).length;
+                $scope.noSuggestions = !Object.keys(res.data.Suggestions).length;
+              });
+        }
+
+        ravenClient.getStats()
             .then(function (res) {
-              $scope.unmergeables = res.data.Unmergables;
-              $scope.suggestions = res.data.Suggestions;
-              $scope.noUnmergeables = !Object.keys(res.data.Unmergables).length;
-              $scope.noSuggestions = !Object.keys(res.data.Suggestions).length;
+              $scope.indexes = res.data.Indexes;
             });
       }
 
-      ravenClient.getStats()
-          .then(function (res) {
-            $scope.indexes = res.data.Indexes;
-          });
+      $scope.removeIndex = function (index) {
+        Dialogs.confirm('Are you sure you want to delete this index?')
+            .then(function (buttonIndex) {
+              if (buttonIndex === 1) {
+                Spinner.show();
+
+                ravenClient.deleteIndex(index.Name)
+                    .then(function (res) {
+                      Toast.showShortCenter('Index ' + index.Name + ' deleted');
+                      loadStats();
+                    }).finally(function () {
+                      Spinner.hide();
+                    });
+              }
+            });
+      };
+
+      loadStats();
     })
     .controller('IndexesCtrl', function ($scope, ravenClient) {
       ravenClient.getStats().then(function (res) {

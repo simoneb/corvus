@@ -21,12 +21,17 @@
             </div>
         </div>
         <div class="card">
-            <div class="item item-divider">Not used recently</div>
-            <div class="item" ng-repeat="index in indexes | indexNotUsedBefore:1:'week'">
+            <div class="item item-divider">Not used recently
+                <p class="item-note">within {{beforeValue}} {{beforeMeasure}}</p></div>
+            <div class="item item-button-right"
+                 ng-repeat="index in indexes | indexNotUsedBefore:beforeValue:beforeMeasure">
                 {{index.Name}}
-                <p>{{index.LastQueryTimestamp | fromNow }}</p>
+                <p>{{index.LastQueryTimestamp | fromNow }} ({{index.LastQueryTimestamp | date:'short'}})</p>
+                <button class="button button-assertive" ng-click="removeIndex(index)">
+                    <i class="icon ion-trash-a"></i>
+                </button>
             </div>
-            <div class="item" ng-show="!(indexes | indexNotUsedBefore:1:'week').length">
+            <div class="item" ng-show="!(indexes | indexNotUsedBefore:beforeValue:beforeMeasure).length">
                 All indexes have been used recently
             </div>
         </div>

@@ -284,6 +284,14 @@ function RavenClient($injector, $rootScope, options) {
         });
   };
 
+  this.deleteIndex = function (name, params) {
+    return http.del('/indexes/' + name, params)
+        .then(function (res) {
+          $rootScope.$broadcast('raven:index:deleted', name, res);
+          return res;
+        });
+  };
+
   /**
    * Gets a list of documents
    * @param {object=} params Arguments to pass on the query string
