@@ -186,7 +186,7 @@ angular.module('corvus.controllers', [])
     .controller('DocumentsCtrl', function ($scope, system, $state, $stateParams, $ionicPopover, ravenClient) {
       var pageSize = 10;
 
-      $scope.title = $stateParams.tag || system ? 'System' : 'Documents';
+      $scope.title = $stateParams.tag || (system ? 'System' : 'Documents');
       $scope.start = 0;
       $scope.documents = [];
 
@@ -198,7 +198,7 @@ angular.module('corvus.controllers', [])
         $scope.start += pageSize;
       };
 
-      $ionicPopover.fromTemplateUrl('templates/app/documentsViewOptions.html', {
+      $ionicPopover.fromTemplateUrl('templates/app/documents/documentsViewOptions.html', {
         scope: $scope
       }).then(function (popover) {
         $scope.popover = popover;

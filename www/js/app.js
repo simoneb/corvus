@@ -120,17 +120,17 @@ angular.module('corvusApp',
             abstract: true,
             views: {
               menuContent: {
-                templateUrl: 'templates/app/documentsSideMenu.html',
+                templateUrl: 'templates/app/documents/documentsSideMenu.html',
                 controller: 'DocumentsSideMenuCtrl'
               },
               mainContent: {
-                template: '<ui-view></ui-view>'
+                template: '<ion-nav-view></ion-nav-view>'
               }
             }
           })
           .state('app.documents.user', {
             url: "/documents/*tag",
-            templateUrl: 'templates/app/documents.html',
+            templateUrl: 'templates/app/documents/documents.html',
             controller: 'DocumentsCtrl',
             resolve: {
               system: function () {
@@ -140,7 +140,7 @@ angular.module('corvusApp',
           })
           .state('app.documents.system', {
             url: "/systemDocuments",
-            templateUrl: 'templates/app/documents.html',
+            templateUrl: 'templates/app/documents/documents.html',
             controller: 'DocumentsCtrl',
             resolve: {
               system: function () {
@@ -150,35 +150,36 @@ angular.module('corvusApp',
           })
           .state('app.documents.document', {
             url: "/document/*id",
-            templateUrl: "templates/app/document.html",
+            templateUrl: "templates/app/documents/document.html",
             controller: 'DocumentCtrl'
           })
 
           .state('app.indexes', {
+            url: '/indexes',
             abstract: true,
             views: {
               menuContent: {
-                templateUrl: 'templates/app/indexesSideMenu.html',
+                templateUrl: 'templates/app/indexes/indexesSideMenu.html',
                 controller: 'IndexesSideMenuCtrl'
               },
               mainContent: {
-                template: '<ui-view></ui-view>'
+                template: '<ion-nav-view></ion-nav-view>'
               }
             }
           })
-          .state('app.indexes.merge', {
-            url: '/mergeIndexes',
-            templateUrl: 'templates/app/mergeIndexes.html',
+          .state('app.indexes.stats', {
+            url: '/stats',
+            templateUrl: 'templates/app/indexes/stats.html',
             controller: 'MergeIndexesCtrl'
           })
           .state('app.indexes.list', {
-            url: '/indexes',
-            templateUrl: 'templates/app/indexes.html',
+            url: '/list',
+            templateUrl: 'templates/app/indexes/indexes.html',
             controller: 'IndexesCtrl'
           })
           .state('app.indexes.index', {
-            url: '/indexes/*name',
-            templateUrl: 'templates/app/index.html',
+            url: '/index/*name',
+            templateUrl: 'templates/app/indexes/index.html',
             controller: 'IndexCtrl'
           });
 
