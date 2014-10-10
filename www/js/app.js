@@ -205,6 +205,6 @@ angular.module('corvusApp',
             }
           });
 
-      //$urlRouterProvider.otherwise('/connections/list');
+      $urlRouterProvider.otherwise('/connections/list');
     });
 
