@@ -161,12 +161,50 @@ angular.module('corvusApp',
             templateUrl: 'templates/app/indexes/indexes.html',
             controller: 'IndexesCtrl'
           })
-          .state('app.indexes.index', {
-            url: '/index/*name',
-            templateUrl: 'templates/app/indexes/index.html',
-            controller: 'IndexCtrl'
+
+          .state('app.index', {
+            abstract: true,
+            url: '/index/{name:[^/]*/[^/]*}',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/indexes/indexSideMenu.html'
+              },
+              mainContent: {
+                template: '<ion-nav-view></ion-nav-view>'
+              }
+            }
+          })
+          .state('app.index.definition', {
+            url: '/definition',
+            templateUrl: 'templates/app/indexes/indexDefinition.html',
+            controller: 'IndexDefinitionCtrl'
+          })
+          .state('app.index.terms', {
+            url: '/terms',
+            templateUrl: 'templates/app/indexes/indexTerms.html',
+            controller: 'IndexTermsCtrl'
+          })
+          .state('app.index.fieldTerms', {
+            url: '/terms/:field',
+            templateUrl: 'templates/app/indexes/indexTermsForField.html',
+            controller: 'IndexTermsForFieldCtrl'
+          })
+
+          .state('app.status', {
+            //abstract: true,
+            url: '/status',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/documents/documentsSideMenu.html',
+                controller: 'DocumentsSideMenuCtrl'
+              },
+              mainContent: {
+                template: '<ion-view title="Status"></ion-view>',
+                controller: 'StatusCtrl'
+              }
+            }
           });
 
-      $urlRouterProvider.otherwise('/connections/list');
+      //$urlRouterProvider.otherwise('/connections/list');
     });
 

@@ -1,0 +1,16 @@
+<ion-view title="{{name}}">
+    <ion-content class="has-header">
+        <div class="card">
+            <div class="item item-divider">Maps</div>
+            <div class="item" ng-repeat="map in index.Maps">
+                <pre>{{map}}</pre>
+            </div>
+        </div>
+        <div class="card" ng-if="index.IsMapReduce">
+            <div class="item item-divider">Reduce</div>
+            <div class="item">
+                <pre>{{index.Reduce}}</pre>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

@@ -449,8 +449,31 @@ angular.module('corvus.controllers', [])
         $scope.indexesByEntityName = _.groupBy(res.data.Indexes, 'ForEntityName');
       })
     })
-    .controller('IndexCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+    .controller('IndexDefinitionCtrl', function ($scope, $stateParams, ravenClient, Toast) {
       $scope.name = $stateParams.name;
 
+      ravenClient.getIndex($stateParams.name, { definition: 'yes' })
+          .then(function (res) {
+            $scope.index = res.data.Index;
+          });
+    })
+    .controller('IndexTermsCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+      $scope.name = $stateParams.name;
+
+      ravenClient.getIndex($stateParams.name, { definition: 'yes' })
+          .then(function (res) {
+            $scope.index = res.data.Index;
+          });
+    })
+    .controller('IndexTermsForFieldCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+      $scope.name = $stateParams.name;
+
+      ravenClient.getTerms($stateParams.name, { field: $stateParams.field })
+          .then(function (res) {
+            $scope.terms = res.data;
+          });
+    })
+
+    .controller('StatusCtrl', function (Toast) {
       Toast.showLongCenter('We\'re not quite there yet, but we\'re working on it!');
     });
