@@ -50,22 +50,6 @@ angular.module('corvusApp',
         }
       });
 
-      /*ravenProvider.defaults.unsupportedVersionHandlers.push(function ($window, $q, Dialogs, Toast) {
-       return function (res, version) {
-       if (/^3/.test(version)) {
-       Dialogs.confirm('Do you want to vote on the feature to introduce support for RavenDB 3?',
-       'RavenDB version not supported', ['No, Yes'])
-       .then(function (buttonIndex) {
-       if (buttonIndex === 2) {
-       $window.open('https://github.com/simoneb/corvus/issues/1', '_system');
-       }
-       });
-       } else {
-       Toast.showShortBottom('This version of RavenDB is not supported');
-       }
-       }
-       });*/
-
       $stateProvider
 
           .state('connections', {
@@ -170,7 +154,7 @@ angular.module('corvusApp',
           .state('app.indexes.stats', {
             url: '/stats',
             templateUrl: 'templates/app/indexes/stats.html',
-            controller: 'MergeIndexesCtrl'
+            controller: 'IndexStatsCtrl'
           })
           .state('app.indexes.list', {
             url: '/list',

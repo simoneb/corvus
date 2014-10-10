@@ -126,7 +126,7 @@ angular.module('corvus.controllers', [])
         } else {
           $state.go('databases', { connectionName: connection.name })
         }
-      }
+      };
 
       $scope.isV3 = function (connection) {
         return /^3/.test(connection.serverVersion);
@@ -402,14 +402,18 @@ angular.module('corvus.controllers', [])
     .controller('IndexesSideMenuCtrl', function ($scope) {
 
     })
-    .controller('MergeIndexesCtrl', function ($scope, ravenClient) {
-      ravenClient.debug.suggestIndexMerge()
-          .then(function (res) {
-            $scope.unmergeables = res.data.Unmergables;
-            $scope.suggestions = res.data.Suggestions;
-            $scope.noUnmergeables = !Object.keys(res.data.Unmergables).length;
-            $scope.noSuggestions = !Object.keys(res.data.Suggestions).length;
-          });
+    .controller('IndexStatsCtrl', function ($scope, ravenClient) {
+      $scope.client = ravenClient;
+
+      if (ravenClient.isV3()) {
+        ravenClient.debug.suggestIndexMerge()
+            .then(function (res) {
+              $scope.unmergeables = res.data.Unmergables;
+              $scope.suggestions = res.data.Suggestions;
+              $scope.noUnmergeables = !Object.keys(res.data.Unmergables).length;
+              $scope.noSuggestions = !Object.keys(res.data.Suggestions).length;
+            });
+      }
 
       ravenClient.getStats()
           .then(function (res) {

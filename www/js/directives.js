@@ -18,4 +18,15 @@ angular.module('corvus.directives', [])
           });
         }
       }
+    })
+    .directive('ifV3', function () {
+      return {
+        link: function (scope, elm, attrs) {
+          var client = scope.$eval(attrs['ifV3']);
+          if (!client) return;
+
+          if (!client.isV3())
+            angular.element(elm).remove();
+        }
+      };
     });

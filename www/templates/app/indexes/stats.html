@@ -1,6 +1,6 @@
 <ion-view title="Merge Suggestions">
     <ion-content class="has-header">
-        <div class="card">
+        <div class="card" if-v3="client">
             <div class="item item-divider">Suggestions</div>
             <div class="item" ng-repeat="(name, comment) in suggestions">
                 {{name}}
@@ -10,7 +10,7 @@
                 There are no merge suggestions
             </div>
         </div>
-        <div class="card">
+        <div class="card" if-v3="client">
             <div class="item item-divider">Unmergeable</div>
             <div class="item" ng-repeat="(name, comment) in unmergeables">
                 {{name}}

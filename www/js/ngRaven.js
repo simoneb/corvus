@@ -224,6 +224,10 @@ function RavenClient($injector, $rootScope, options) {
         }, '').substr(1);
   }
 
+  this.isV3 = function () {
+    return /^3/.test(options.serverVersion);
+  };
+
   /**
    * Gets the databases on the server
    * @param {object=} params Arguments to pass on the query string
@@ -369,7 +373,7 @@ function RavenClient($injector, $rootScope, options) {
     getIndexingPerfStats: function (params) {
       return http.get('/debug/indexing-perf-stats');
     },
-    suggestIndexMerge: function(params) {
+    suggestIndexMerge: function (params) {
       return http.get('/debug/suggest-index-merge');
     }
   };
@@ -431,7 +435,7 @@ function RavenClient($injector, $rootScope, options) {
    * @param {object[]} [params.facets] Example: [{"Name":"Tag"}]
    * */
   this.getFacets = function (indexName, params) {
-    if(params && params.facets) {
+    if (params && params.facets) {
       params.facets = [params.facets];
     }
 
@@ -448,13 +452,9 @@ angular.module('ngRaven', [])
         responseErrorHandlers: []
       };
 
-      self.$get = function ($injector, $http, $q) {
+      self.$get = function ($injector) {
         return function (options) {
           var localOptions = angular.extend({}, self.defaults, options);
-
-          if (/^3/.test(options.serverVersion)) {
-            return $injector.instantiate(RavenClient, { options: localOptions });
-          }
 
           return $injector.instantiate(RavenClient, { options: localOptions });
         };
