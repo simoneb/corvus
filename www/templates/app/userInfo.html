@@ -17,17 +17,26 @@
                 <p>Admin (current database)</p>
                 {{userInfo.IsAdminCurrentDb}}
             </ion-item>
-            <ion-item>
-                <p>Databases</p>
-                {{userInfo.Databases || 'none'}}
+            <ion-item class="item-divider">Databases</ion-item>
+            <ion-item ng-repeat="db in userInfo.Databases">
+                {{db.Database}}
             </ion-item>
-            <ion-item>
-                <p>Admin Databases</p>
-                {{userInfo.AdminDatabases || 'none'}}
+            <ion-item ng-show="!userInfo.Databases || !userInfo.Databases.length">
+                none
             </ion-item>
-            <ion-item>
-                <p>Readonly Databases</p>
-                {{userInfo.ReadOnlyDatabases || 'none'}}
+            <ion-item class="item-divider">Admin Databases</ion-item>
+            <ion-item ng-repeat="db in userInfo.AdminDatabases">
+                {{db.Database}}
+            </ion-item>
+            <ion-item ng-show="!userInfo.AdminDatabases || !userInfo.AdminDatabases.length">
+                none
+            </ion-item>
+            <ion-item class="item-divider">Readonly Databases</ion-item>
+            <ion-item ng-repeat="db in userInfo.ReadOnlyDatabases">
+                {{db.Database}}
+            </ion-item>
+            <ion-item ng-show="!userInfo.ReadOnlyDatabases || !userInfo.ReadOnlyDatabases.length">
+                none
             </ion-item>
         </ion-list>
     </ion-content>
