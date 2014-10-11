@@ -4,3 +4,7 @@
     font-size: small;
     padding: 5px;
 }
+
+.popover {
+    height: auto;
+}

@@ -41,7 +41,7 @@ angular.module('corvus.services', [])
       };
 
       self.save = function (connection, oldName) {
-        if(!connection.name || !connection.url) return;
+        if (!connection.name || !connection.url) return;
 
         var index = findIndex(oldName || connection.name);
         var list = self.list(),
@@ -72,6 +72,21 @@ angular.module('corvus.services', [])
           database: 'simoneb-test'
         });
       }
+    })
+    .service('Settings', function ($window) {
+      var self = this,
+          store = $window.localStorage,
+          defaultSettings = angular.toJson({
+            documentIdPattern: ':\\s?"(\\w+\\/\\d+)"'
+          });
+
+      self.get = function () {
+        return angular.fromJson(store.getItem('settings') || defaultSettings);
+      };
+
+      self.set = function (settings) {
+        store.setItem('settings', angular.toJson(settings));
+      };
     })
     .factory('Dialogs', function ($cordovaDialogs, $ionicPopup) {
       if (navigator.notification) {

@@ -1,6 +1,6 @@
 <ion-view title="Connections">
     <ion-nav-buttons side="right">
-        <button class="button button-icon icon ion-plus-round" ng-click="create()"></button>
+        <button class="button button-icon icon ion-more" ng-click="showPopover($event)"></button>
     </ion-nav-buttons>
     <ion-content class="has-header">
         <ion-list>
@@ -15,12 +15,10 @@
 
                 <i class="icon ion-ios7-gear" ng-click="edit(connection, $event)"></i>
             </ion-item>
-            <ion-item ng-if="!connections.length" style="text-align: center">
+            <ion-item ng-if="!connections.length" style="text-align: center" ng-click="create()">
                 There are no connections
                 <p style="font-style: italic">
-                    Click the
-                    <i class="icon ion-plus-round"></i>
-                    button above to get started!
+                    Click <strong>here</strong> to get started!
                 </p>
             </ion-item>
         </ion-list>

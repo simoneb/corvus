@@ -125,8 +125,42 @@ angular.module('corvus.controllers', [])
       }, formElement);
     })
 
-    .controller('ListConnectionsCtrl', function ($scope, $state, Connections) {
+    .controller('ListConnectionsCtrl',
+    function ($scope, $state, $ionicPopover, $ionicModal, Connections, Settings, Toast) {
       $scope.connections = Connections.list();
+      $scope.settings = Settings.get();
+
+      $ionicPopover.fromTemplateUrl('templates/connections/listPopover.html', {
+        scope: $scope
+      }).then(function (popover) {
+        $scope.popover = popover;
+      });
+
+      $ionicModal.fromTemplateUrl('templates/settingsModal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.settingsModal = modal;
+      });
+
+      $scope.showPopover = function (event) {
+        $scope.popover.show(event);
+      };
+
+      $scope.showSettings = function () {
+        $scope.popover.hide();
+        $scope.settingsModal.show();
+      };
+
+      $scope.$on('$destroy', function () {
+        $scope.popover.remove();
+        $scope.settingsModal.remove();
+      });
+
+      $scope.saveSettings = function() {
+        Settings.set($scope.settings);
+        $scope.settingsModal.hide();
+        Toast.showShortBottom('Settings saved');
+      };
 
       $scope.edit = function (connection, event) {
         $state.go('connections.edit', { name: connection.name });
@@ -247,7 +281,7 @@ angular.module('corvus.controllers', [])
     })
 
     .controller('DocumentCtrl',
-    function ($scope, $stateParams, $ionicNavBarDelegate, Toast, Dialogs, Spinner, ActionSheet, ravenClient) {
+    function ($scope, $stateParams, $ionicNavBarDelegate, Toast, Dialogs, Spinner, ActionSheet, ravenClient, Settings) {
       $scope.documentId = $stateParams.id;
       $scope.editable = false;
       $scope.hasChanged = false;
@@ -300,7 +334,7 @@ angular.module('corvus.controllers', [])
       function loadWholeDocument() {
         ravenClient.getDocument($stateParams.id, { ignoreErrors: 404 })
             .then(function (res) {
-              var referencesRegex = /:\s?"(\w+\/\d+)"/g,
+              var referencesRegex = new RegExp(Settings.get().documentIdPattern, 'g'),
                   references = [],
                   data = angular.toJson(res.data),
                   match;

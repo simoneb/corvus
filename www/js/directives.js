@@ -19,6 +19,22 @@ angular.module('corvus.directives', [])
         }
       }
     })
+    .directive('regexp', function () {
+      return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+          ctrl.$parsers.unshift(function (viewValue) {
+            try {
+              new RegExp(viewValue);
+              ctrl.$setValidity('regexp', true);
+              return viewValue;
+            } catch (err) {
+              ctrl.$setValidity('regexp', false);
+            }
+          });
+        }
+      }
+    })
     .directive('ifV3', function () {
       return {
         link: function (scope, elm, attrs) {
