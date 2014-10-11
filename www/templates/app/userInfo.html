@@ -1,0 +1,34 @@
+<ion-view title="Stats">
+    <ion-content>
+        <ion-list>
+            <ion-item>
+                <p>Remark</p>
+                {{userInfo.Remark}}
+            </ion-item>
+            <ion-item>
+                <p>User</p>
+                {{userInfo.User || 'unknown'}}
+            </ion-item>
+            <ion-item>
+                <p>Admin (global)</p>
+                {{userInfo.IsAdminGlobal}}
+            </ion-item>
+            <ion-item>
+                <p>Admin (current database)</p>
+                {{userInfo.IsAdminCurrentDb}}
+            </ion-item>
+            <ion-item>
+                <p>Databases</p>
+                {{userInfo.Databases || 'none'}}
+            </ion-item>
+            <ion-item>
+                <p>Admin Databases</p>
+                {{userInfo.AdminDatabases || 'none'}}
+            </ion-item>
+            <ion-item>
+                <p>Readonly Databases</p>
+                {{userInfo.ReadOnlyDatabases || 'none'}}
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

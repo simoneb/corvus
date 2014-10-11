@@ -202,19 +202,39 @@ angular.module('corvusApp',
             controller: 'IndexTermsCtrl'
           })
 
-          .state('app.status', {
-            //abstract: true,
-            url: '/status',
+          .state('app.statuses', {
+            url: '/statuses',
             views: {
               menuContent: {
                 templateUrl: 'templates/app/documents/documentsSideMenu.html',
                 controller: 'DocumentsSideMenuCtrl'
               },
               mainContent: {
-                template: '<ion-view title="Status"></ion-view>',
-                controller: 'StatusCtrl'
+                templateUrl: 'templates/app/statuses.html'
               }
             }
+          })
+          .state('app.status', {
+            abstract: true,
+            url: '/status',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/statusesSideMenu.html'
+              },
+              mainContent: {
+                template: '<ion-nav-view></ion-nav-view>'
+              }
+            }
+          })
+          .state('app.status.stats', {
+            url: '/stats',
+            templateUrl: 'templates/app/stats.html',
+            controller: 'StatsCtrl'
+          })
+          .state('app.status.userInfo', {
+            url: '/userInfo',
+            templateUrl: 'templates/app/userInfo.html',
+            controller: 'UserInfoCtrl'
           });
 
       $urlRouterProvider.otherwise('/connections/list');

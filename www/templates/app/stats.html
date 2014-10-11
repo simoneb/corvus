@@ -1,0 +1,37 @@
+<ion-view title="Stats">
+    <ion-content>
+        <ion-list>
+            <ion-item>
+                <p>Last document Etag</p>
+                {{stats.LastDocEtag}}
+            </ion-item>
+            <ion-item>
+                <p>Last attachment Etag</p>
+                {{stats.LastAttachmentEtag}}
+            </ion-item>
+            <ion-item>
+                <p>Number of indexes</p>
+                {{stats.CountOfIndexes}}
+            </ion-item>
+            <ion-item>
+                <p>Number of documents</p>
+                {{stats.CountOfDocuments}}
+            </ion-item>
+            <ion-item>
+                <p>Index batch size</p>
+                {{stats.CurrentNumberOfItemsToIndexInSingleBatch}}
+            </ion-item>
+            <ion-item>
+                <p>Reduce batch size</p>
+                {{stats.CurrentNumberOfItemsToReduceInSingleBatch}}
+            </ion-item>
+            <ion-item class="item-divider">Stale indexes</ion-item>
+            <ion-item ng-repeat="index in stats.StaleIndexes">
+                {{index.Name}}
+            </ion-item>
+            <ion-item ng-show="!stats.StaleIndexes || !stats.StaleIndexes.length">
+                No stale indexes
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

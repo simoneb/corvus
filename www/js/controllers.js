@@ -156,7 +156,7 @@ angular.module('corvus.controllers', [])
         $scope.settingsModal.remove();
       });
 
-      $scope.saveSettings = function() {
+      $scope.saveSettings = function () {
         Settings.set($scope.settings);
         $scope.settingsModal.hide();
         Toast.showShortBottom('Settings saved');
@@ -529,6 +529,13 @@ angular.module('corvus.controllers', [])
           });
     })
 
-    .controller('StatusCtrl', function (Toast) {
-      Toast.showLongCenter('We\'re not quite there yet, but we\'re working on it!');
+    .controller('StatsCtrl', function ($scope, ravenClient) {
+      ravenClient.getStats().then(function(res) {
+        $scope.stats = res.data;
+      });
+    })
+    .controller('UserInfoCtrl', function ($scope, ravenClient) {
+      ravenClient.debug.getUserInfo().then(function(res) {
+        $scope.userInfo = res.data;
+      });
     });
