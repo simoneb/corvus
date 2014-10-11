@@ -405,6 +405,10 @@ function RavenClient($injector, $rootScope, options) {
     return http.get('/indexes/' + indexName, params);
   };
 
+  this.getTransformers = function (params) {
+    return http.get('/transformers', params);
+  };
+
   this.getTransformer = function (transformerName, params) {
     return http.get('/transformers/' + transformerName, params);
   };

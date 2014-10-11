@@ -161,6 +161,16 @@ angular.module('corvusApp',
             templateUrl: 'templates/app/indexes/indexes.html',
             controller: 'IndexesCtrl'
           })
+          .state('app.indexes.transformers', {
+            url: '/transformers',
+            templateUrl: 'templates/app/indexes/transformers.html',
+            controller: 'TransformersCtrl'
+          })
+          .state('app.indexes.transformer', {
+            url: '/transformer/*name',
+            templateUrl: 'templates/app/indexes/transformer.html',
+            controller: 'TransformerCtrl'
+          })
 
           .state('app.index', {
             abstract: true,

@@ -1,5 +1,22 @@
 angular.module('corvus.controllers', [])
 
+    .controller('AppCtrl', function ($scope, $state, connectionName, databaseName, ravenClient, Connections) {
+      $scope.connectionName = connectionName;
+      $scope.databaseName = databaseName;
+      $scope.singleDatabase = !!Connections.get(connectionName).database;
+
+      $scope.changeConnection = function () {
+        $state.go('connections.list');
+      };
+
+      $scope.changeDatabase = function () {
+        if ($scope.singleDatabase) return;
+
+        $state.go('databases', { connectionName: connectionName });
+      };
+
+    })
+
     .controller('EditConnectionCtrl',
     function ($scope, $state, $q, $timeout, $stateParams, $ionicGesture, raven, Dialogs, Toast, Spinner, Connections) {
       var name = $stateParams.name,
@@ -139,23 +156,6 @@ angular.module('corvus.controllers', [])
       ravenClient.getDatabases().then(function (res) {
         $scope.databases = res.data;
       });
-    })
-
-    .controller('AppCtrl', function ($scope, $state, connectionName, databaseName, ravenClient, Connections) {
-      $scope.connectionName = connectionName;
-      $scope.databaseName = databaseName;
-      $scope.singleDatabase = !!Connections.get(connectionName).database;
-
-      $scope.changeConnection = function () {
-        $state.go('connections.list');
-      };
-
-      $scope.changeDatabase = function () {
-        if ($scope.singleDatabase) return;
-
-        $state.go('databases', { connectionName: connectionName });
-      };
-
     })
 
     .controller('DocumentsSideMenuCtrl', function ($scope, ravenClient) {
@@ -449,7 +449,22 @@ angular.module('corvus.controllers', [])
         $scope.indexesByEntityName = _.groupBy(res.data.Indexes, 'ForEntityName');
       })
     })
-    .controller('IndexCtrl', function($scope, $stateParams, ravenClient) {
+    .controller('TransformersCtrl', function ($scope, ravenClient) {
+      ravenClient.getTransformers().then(function (res) {
+        $scope.transformersByEntityName = _.groupBy(res.data, function (t) {
+          return t.name.split('/')[0] || t.name;
+        });
+      });
+    })
+    .controller('TransformerCtrl', function ($scope, $stateParams, ravenClient) {
+      $scope.name = $stateParams.name;
+
+      ravenClient.getTransformer($stateParams.name).then(function (res) {
+        $scope.transformer = res.data.Transformer;
+      });
+    })
+
+    .controller('IndexCtrl', function ($scope, $stateParams, ravenClient) {
       $scope.name = $stateParams.name;
 
       ravenClient.getIndex($stateParams.name, { definition: 'yes' })
@@ -457,7 +472,7 @@ angular.module('corvus.controllers', [])
             $scope.index = res.data.Index;
           });
     })
-    .controller('IndexSideMenuCtrl', function($scope, $stateParams, ravenClient) {
+    .controller('IndexSideMenuCtrl', function ($scope, $stateParams, ravenClient) {
       $scope.name = $stateParams.name;
 
       ravenClient.getIndex($stateParams.name, { definition: 'yes' })

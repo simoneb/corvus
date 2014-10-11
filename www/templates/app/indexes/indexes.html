@@ -1,5 +1,5 @@
 <ion-view title="Indexes">
-    <ion-content class="has-header">
+    <ion-content>
         <div class="card" ng-repeat="(entity, indexes) in indexesByEntityName">
             <ion-item class="item-divider">{{entity || 'Other'}} ({{indexes.length}})</ion-item>
             <ion-item ng-repeat="index in indexes"
