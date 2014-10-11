@@ -5,6 +5,8 @@ var jeditor = require("gulp-json-editor");
 
 require('shelljs/global');
 
+var newVersion;
+
 gulp.task('default', ['install']);
 
 gulp.task('install', ['git-check'], function () {
@@ -28,18 +30,23 @@ gulp.task('install', ['git-check'], function () {
   exec('ionic platform add android');
 });
 
-gulp.task('bump', function () {
-  var newVersion;
+gulp.task('bump', ['bump-package.json', 'bump-config.xml'], function () {
+  exec('git add package.json www/config.xml && git commit -m "Bump version to ' + newVersion + '"');
+  console.log(gutil.colors.green('New version: ' + newVersion));
+});
 
-  gulp.src('package.json')
+gulp.task('bump-package.json', function(){
+  return gulp.src('package.json')
       .pipe(jeditor(function (json) {
         var patch = parseInt(/\d+$/.exec(json.version), 10) + 1;
         json.version = newVersion = json.version.replace(/\d+$/, patch);
         return json;
       }))
       .pipe(gulp.dest('.'));
+});
 
-  gulp.src('www/config.xml')
+gulp.task('bump-config.xml', ['bump-package.json'], function() {
+  return gulp.src('www/config.xml')
       .pipe(xeditor(function (xml) {
         xml.root().attr({ version: newVersion });
         return xml;
