@@ -164,13 +164,15 @@ angular.module('corvusApp',
 
           .state('app.index', {
             abstract: true,
-            url: '/index/{name:[^/]*/[^/]*}',
+            url: '/index/*name',
             views: {
               menuContent: {
-                templateUrl: 'templates/app/indexes/indexSideMenu.html'
+                templateUrl: 'templates/app/indexes/indexSideMenu.html',
+                controller: 'IndexSideMenuCtrl'
               },
               mainContent: {
-                template: '<ion-nav-view></ion-nav-view>'
+                template: '<ion-nav-view></ion-nav-view>',
+                controller: 'IndexCtrl'
               }
             }
           })
@@ -179,15 +181,15 @@ angular.module('corvusApp',
             templateUrl: 'templates/app/indexes/indexDefinition.html',
             controller: 'IndexDefinitionCtrl'
           })
-          .state('app.index.terms', {
+          .state('app.index.fields', {
             url: '/terms',
+            templateUrl: 'templates/app/indexes/indexFields.html',
+            controller: 'IndexFieldsCtrl'
+          })
+          .state('app.index.terms', {
+            url: '/terms/:field',
             templateUrl: 'templates/app/indexes/indexTerms.html',
             controller: 'IndexTermsCtrl'
-          })
-          .state('app.index.fieldTerms', {
-            url: '/terms/:field',
-            templateUrl: 'templates/app/indexes/indexTermsForField.html',
-            controller: 'IndexTermsForFieldCtrl'
           })
 
           .state('app.status', {

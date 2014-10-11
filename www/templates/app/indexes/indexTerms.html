@@ -1,10 +1,9 @@
-<ion-view title="{{name}}">
+<ion-view title="Terms">
     <ion-content class="has-header">
-        <div class="card">
-            <div class="item item-divider">Fields</div>
-            <a class="item" ng-repeat="field in index.Fields" ui-sref="app.index.fieldTerms({ field: field })">
-                {{field}}
-            </a>
-        </div>
+        <ion-list>
+            <ion-item ng-repeat="term in terms">
+                {{term}}
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

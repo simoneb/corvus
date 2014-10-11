@@ -449,23 +449,29 @@ angular.module('corvus.controllers', [])
         $scope.indexesByEntityName = _.groupBy(res.data.Indexes, 'ForEntityName');
       })
     })
-    .controller('IndexDefinitionCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+    .controller('IndexCtrl', function($scope, $stateParams, ravenClient) {
       $scope.name = $stateParams.name;
 
       ravenClient.getIndex($stateParams.name, { definition: 'yes' })
           .then(function (res) {
             $scope.index = res.data.Index;
           });
+    })
+    .controller('IndexSideMenuCtrl', function($scope, $stateParams, ravenClient) {
+      $scope.name = $stateParams.name;
+
+      ravenClient.getIndex($stateParams.name, { definition: 'yes' })
+          .then(function (res) {
+            $scope.index = res.data.Index;
+          });
+    })
+    .controller('IndexDefinitionCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+
+    })
+    .controller('IndexFieldsCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+
     })
     .controller('IndexTermsCtrl', function ($scope, $stateParams, ravenClient, Toast) {
-      $scope.name = $stateParams.name;
-
-      ravenClient.getIndex($stateParams.name, { definition: 'yes' })
-          .then(function (res) {
-            $scope.index = res.data.Index;
-          });
-    })
-    .controller('IndexTermsForFieldCtrl', function ($scope, $stateParams, ravenClient, Toast) {
       $scope.name = $stateParams.name;
 
       ravenClient.getTerms($stateParams.name, { field: $stateParams.field })
