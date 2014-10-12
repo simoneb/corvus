@@ -514,13 +514,7 @@ angular.module('corvus.controllers', [])
             $scope.index = res.data.Index;
           });
     })
-    .controller('IndexDefinitionCtrl', function ($scope, $stateParams, ravenClient, Toast) {
-
-    })
-    .controller('IndexFieldsCtrl', function ($scope, $stateParams, ravenClient, Toast) {
-
-    })
-    .controller('IndexTermsCtrl', function ($scope, $stateParams, ravenClient, Toast) {
+    .controller('IndexTermsCtrl', function ($scope, $stateParams, ravenClient) {
       $scope.name = $stateParams.name;
 
       ravenClient.getTerms($stateParams.name, { field: $stateParams.field })
@@ -528,14 +522,76 @@ angular.module('corvus.controllers', [])
             $scope.terms = res.data;
           });
     })
+    .controller('IndexQueryCtrl', function ($scope, $ionicModal, ravenClient) {
+      var currentSortIndex;
+
+      ravenClient.getTransformers()
+          .then(function (res) {
+            $scope.transformers = res.data;
+          });
+
+      $scope.sorts = [];
+      $scope.query = '';
+      $scope.sortOrders = ['Ascending', 'Descending'];
+
+      $ionicModal.fromTemplateUrl('templates/app/indexes/querySortModal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.querySortModal = modal;
+      });
+
+      $ionicModal.fromTemplateUrl('templates/app/indexes/querySortModal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.querySortModal = modal;
+      });
+
+      $scope.runQuery = function() {
+        console.log($scope.query);
+        ravenClient.queryIndex($scope.name, $scope.query)
+            .then(function(res){
+              $scope.results = res.data;
+            });
+      };
+
+      $scope.$on('$destroy', function () {
+        $scope.querySortModal.remove();
+      });
+
+      $scope.$on('modal.hidden', function () {
+        currentSortIndex = null;
+        $scope.currentSort = null;
+      });
+
+      $scope.addSort = function () {
+        $scope.currentSort = { order: $scope.sortOrders[0] };
+        $scope.querySortModal.show();
+      };
+
+      $scope.editSort = function (sort, index) {
+        currentSortIndex = index;
+        $scope.currentSort = angular.copy(sort);
+        $scope.querySortModal.show();
+      };
+
+      $scope.saveCurrentSort = function () {
+        if (angular.isNumber(currentSortIndex)) {
+          $scope.sorts.splice(currentSortIndex, 1, $scope.currentSort);
+        } else {
+          $scope.sorts.push($scope.currentSort);
+        }
+
+        $scope.querySortModal.hide();
+      };
+    })
 
     .controller('StatsCtrl', function ($scope, ravenClient) {
-      ravenClient.getStats().then(function(res) {
+      ravenClient.getStats().then(function (res) {
         $scope.stats = res.data;
       });
     })
     .controller('UserInfoCtrl', function ($scope, ravenClient) {
-      ravenClient.debug.getUserInfo().then(function(res) {
+      ravenClient.debug.getUserInfo().then(function (res) {
         $scope.userInfo = res.data;
       });
     });

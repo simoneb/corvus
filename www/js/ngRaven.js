@@ -218,9 +218,11 @@ function RavenClient($injector, $rootScope, options) {
   var http = $injector.instantiate(HttpClient, { options: options });
 
   function buildQuery(queryObj) {
+    if(angular.isString(queryObj)) return queryObj;
+
     return _.reduce(queryObj,
         function (acc, val, key) {
-          return ',' + acc + key + ':' + val
+          return acc + ',' + key + ':' + val
         }, '').substr(1);
   }
 
@@ -316,6 +318,7 @@ function RavenClient($injector, $rootScope, options) {
    * @param {string=} params.sort Example: LastModified
    * @param {string=} params.start
    * @param {string=} params.pageSize
+   * @param {string=} params.operator Example: AND, OR
    * */
   this.queryIndex = function (indexName, query, params) {
     return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery(query) }, params));

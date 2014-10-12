@@ -1,0 +1,30 @@
+<ion-modal-view>
+    <ion-header-bar class="bar-dark">
+        <h1 class="title">Sort By</h1>
+    </ion-header-bar>
+    <ion-content>
+        <form novalidate name="form" ng-submit="saveCurrentSort()">
+            <ion-list>
+                <ion-item class="item-select">
+                    <span class="input-label">Field</span>
+                    <select required
+                            ng-model="currentSort.field"
+                            ng-options="field for field in index.Fields">
+                        <option value="">Select a field</option>
+                    </select>
+                </ion-item>
+                <ion-item class="item-select">
+                    <span class="input-label">Order</span>
+                    <select ng-model="currentSort.order" ng-options="order for order in sortOrders">
+                    </select>
+                </ion-item>
+            </ion-list>
+            <div class="padding">
+                <button ng-disabled="form.$invalid"
+                        class="button button-block button-positive">
+                    &nbsp;Ok
+                </button>
+            </div>
+        </form>
+    </ion-content>
+</ion-modal-view>

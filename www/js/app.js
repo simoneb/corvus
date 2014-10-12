@@ -20,9 +20,6 @@ angular.module('corvusApp',
     })
 
     .config(function ($stateProvider, $urlRouterProvider, ravenProvider) {
-      /*ravenProvider.defaults.url = 'https://kiwi.ravenhq.com/databases/simoneb-test';
-       ravenProvider.defaults.apiKey = '781ffb1c-a505-4485-8505-2f160d4820d2';*/
-
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
           if ((res.config.ignoreErrors || []).indexOf(res.status) !== -1) {
@@ -192,18 +189,21 @@ angular.module('corvusApp',
           })
           .state('app.index.definition', {
             url: '/definition',
-            templateUrl: 'templates/app/indexes/indexDefinition.html',
-            controller: 'IndexDefinitionCtrl'
+            templateUrl: 'templates/app/indexes/indexDefinition.html'
           })
           .state('app.index.fields', {
             url: '/terms',
-            templateUrl: 'templates/app/indexes/indexFields.html',
-            controller: 'IndexFieldsCtrl'
+            templateUrl: 'templates/app/indexes/indexFields.html'
           })
           .state('app.index.terms', {
             url: '/terms/:field',
             templateUrl: 'templates/app/indexes/indexTerms.html',
             controller: 'IndexTermsCtrl'
+          })
+          .state('app.index.query', {
+            url: '/query',
+            templateUrl: 'templates/app/indexes/query.html',
+            controller: 'IndexQueryCtrl'
           })
 
           .state('app.statuses', {
