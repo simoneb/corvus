@@ -5,42 +5,46 @@
         </button>
     </ion-nav-buttons>
 </ion-nav-buttons>
-<ion-view title="Query">
+<ion-view title="{{name}}">
     <ion-content>
         <div class="list">
-            <div class="item item-input item-stacked-label">
-                <span class="input-label">Query</span>
-                <textarea ng-model="$parent.query" placeholder="write your query here"></textarea>
+            <div class="item item-divider">Query</div>
+            <div class="item item-input">
+                <textarea rows="4" ng-model="$parent.query" placeholder="write your query here"></textarea>
             </div>
-            <ion-item class="item-divider item-icon-right">Sort By</ion-item>
-            <ion-item class="item-button-right" ng-repeat="sort in sorts">
-                {{sort.field}}, {{sort.order}}
-                <button class="button button-icon" ng-click="editSort(sort, $index)">
-                    <i class="icon ion-edit"></i>
-                </button>
-            </ion-item>
-            <ion-item style="text-align: center; font-style: italic" ng-click="addSort()">
-                <span ng-show="!sorts.length">No sorting,</span>
-                tap <strong>here</strong> to add a sort clause
-            </ion-item>
-            <ion-item class="item-input item-select">
+            <div class="item item-input item-select">
+                <span class="input-label">Default operator</span>
+                <select ng-model="$parent.operator" ng-options="operator for operator in operators">
+                </select>
+            </div>
+            <div class="item item-input item-select">
                 <span class="input-label">Transformer</span>
-                <select ng-model="transformer" ng-options="transformer.name for transformer in transformers">
+                <select ng-model="$parent.transformer"
+                        ng-options="transformer.name for transformer in transformers track by transformer.name">
                     <option value="">No transformer</option>
                 </select>
+            </div>
+            <ion-item class="item-divider item-icon-right">
+                Sort By
+                <i class="icon ion-plus-round" ng-click="addSort()"></i>
+            </ion-item>
+            <ion-item class="item-button-right" ng-repeat="sort in sorts" ng-click="editSort($index)">
+                {{sort.field}}, {{sort.order.name}}
+                <button class="button button-icon" ng-click="removeSort($index, $event)">
+                    <i class="icon ion-minus-round assertive"></i>
+                </button>
+            </ion-item>
+            <ion-item ng-show="!sorts.length"
+                      style="text-align: center; font-style: italic"
+                      ng-click="addSort()">
+                <small>No sorting, tap <strong>here</strong> to add a sort clause</small>
             </ion-item>
         </div>
         <div class="padding">
-            <button class="button button-full button-positive" ng-click="runQuery()">
+            <button class="button button-block button-positive" ng-click="runQuery()">
                 <i class="icon ion-play"></i>
                 &nbsp;Run query
             </button>
         </div>
-        <p>{{results.TotalResults}}</p>
-        <ion-list>
-            <ion-item ng-repeat="result in results.Results">
-                {{result | json}}
-            </ion-item>
-        </ion-list>
     </ion-content>
 </ion-view>

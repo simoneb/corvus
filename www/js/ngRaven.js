@@ -217,15 +217,6 @@ function RavenClient($injector, $rootScope, options) {
 
   var http = $injector.instantiate(HttpClient, { options: options });
 
-  function buildQuery(queryObj) {
-    if(angular.isString(queryObj)) return queryObj;
-
-    return _.reduce(queryObj,
-        function (acc, val, key) {
-          return acc + ',' + key + ':' + val
-        }, '').substr(1);
-  }
-
   this.isV3 = function () {
     return /^3/.test(options.serverVersion);
   };
@@ -314,14 +305,27 @@ function RavenClient($injector, $rootScope, options) {
   /**
    * Queries an index
    * @param {string} indexName
-   * @param {string=} query
-   * @param {string=} params.sort Example: LastModified
+   * @param {(object|string)=} query
+   * @param {(string|string[])=} params.sort Example: LastModified
+   * @param {string=} params.operator Example: AND, OR
+   * @param {string=} params.resultsTransformer
+   * @param {string=} params.fetch Example: __all_fields
+   * @param {string=} params.debug Example: entries
    * @param {string=} params.start
    * @param {string=} params.pageSize
-   * @param {string=} params.operator Example: AND, OR
    * */
   this.queryIndex = function (indexName, query, params) {
-    return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery(query) }, params));
+    function buildQuery() {
+      if (angular.isString(query)) return query;
+
+      if (angular.isObject(query))
+        return _.reduce(query,
+            function (acc, val, key) {
+              return acc + ' ' + key + ':' + val
+            }, '').substr(1);
+    }
+
+    return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery() }, params));
   };
 
   /*

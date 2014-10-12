@@ -88,6 +88,22 @@ angular.module('corvus.services', [])
         store.setItem('settings', angular.toJson(settings));
       };
     })
+    .service('Queries', function ($window) {
+      var self = this,
+          store = $window.localStorage;
+
+      self.getLast = function () {
+        return self.list()[0];
+      };
+
+      self.list = function () {
+        return angular.fromJson(store.getItem('queries') || '[]');
+      };
+
+      self.save = function (query) {
+        store.setItem('queries', angular.toJson([query]));
+      }
+    })
     .factory('Dialogs', function ($cordovaDialogs, $ionicPopup) {
       if (navigator.notification) {
         return $cordovaDialogs;

@@ -522,8 +522,13 @@ angular.module('corvus.controllers', [])
             $scope.terms = res.data;
           });
     })
-    .controller('IndexQueryCtrl', function ($scope, $ionicModal, ravenClient) {
-      var currentSortIndex;
+    .controller('IndexQueryCtrl', function ($scope, $state, $ionicModal, ravenClient, Dialogs, Queries) {
+      var currentSortIndex,
+          lastQuery = Queries.getLast(),
+          pageSize = 10;
+
+      $scope.start = 0;
+      $scope.documents = [];
 
       ravenClient.getTransformers()
           .then(function (res) {
@@ -532,35 +537,102 @@ angular.module('corvus.controllers', [])
 
       $scope.sorts = [];
       $scope.query = '';
-      $scope.sortOrders = ['Ascending', 'Descending'];
+      $scope.operator = 'OR';
 
-      $ionicModal.fromTemplateUrl('templates/app/indexes/querySortModal.html', {
-        scope: $scope
-      }).then(function (modal) {
-        $scope.querySortModal = modal;
-      });
-
-      $ionicModal.fromTemplateUrl('templates/app/indexes/querySortModal.html', {
-        scope: $scope
-      }).then(function (modal) {
-        $scope.querySortModal = modal;
-      });
-
-      $scope.runQuery = function() {
-        console.log($scope.query);
-        ravenClient.queryIndex($scope.name, $scope.query)
-            .then(function(res){
-              $scope.results = res.data;
-            });
+      $scope.loadNextPage = function () {
+        loadDocuments();
+        $scope.start += pageSize;
       };
+
+      if (lastQuery) {
+        $scope.query = lastQuery.query;
+        $scope.sorts = lastQuery.sortBy;
+        $scope.transformer = lastQuery.transformer;
+        $scope.operator = lastQuery.operator;
+      }
+
+      $scope.sortOrders = [
+        { name: 'Ascending', ascending: true, range: false },
+        { name: 'Descending', ascending: false, range: false },
+        { name: 'Range Ascending', ascending: true, range: true },
+        { name: 'Range Descending', ascending: false, range: true }
+      ];
+
+      $scope.operators = ['OR', 'AND'];
+
+      $ionicModal.fromTemplateUrl('templates/app/indexes/querySortModal.html', {
+        scope: $scope
+      })
+          .then(function (modal) {
+            $scope.querySortModal = modal;
+          });
+
+      $ionicModal.fromTemplateUrl('templates/app/indexes/queryResultsModal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.queryResultsModal = modal;
+      });
+
+      $scope.runQuery = function () {
+        Queries.save({
+          indexName: $scope.name,
+          query: $scope.query,
+          sortBy: $scope.sorts,
+          transformer: $scope.transformer,
+          operator: $scope.operator
+        });
+
+        $scope.queryResultsModal.show();
+        $scope.querying = true;
+      };
+
+      function noDocuments(res) {
+        if (res.data.Error) {
+          $scope.queryResultsModal.hide();
+          Dialogs.alert(res.data.Error, 'Error');
+        }
+
+        showDocuments([]);
+      }
+
+      function showDocuments(docs) {
+        $scope.noMoreDocs = !docs.length;
+        $scope.documents.push.apply($scope.documents, docs);
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      }
+
+      function loadDocuments() {
+        var params = {
+          ignoreErrors: 500,
+          sort: $scope.sorts.map(function (sort) {
+            return (!sort.order.ascending ? '-' : '') +
+                sort.field +
+                (sort.order.range ? '_Range' : '');
+          }),
+          resultsTransformer: $scope.transformer && $scope.transformer.name,
+          operator: $scope.operator,
+          start: $scope.start,
+          pageSize: pageSize
+        };
+
+        ravenClient.queryIndex($scope.name, $scope.query, params)
+            .then(function (res) {
+              showDocuments(res.data.Results);
+            }, noDocuments);
+      }
 
       $scope.$on('$destroy', function () {
         $scope.querySortModal.remove();
+        $scope.queryResultsModal.remove();
       });
 
       $scope.$on('modal.hidden', function () {
         currentSortIndex = null;
+        $scope.start = 0;
+        $scope.documents = [];
         $scope.currentSort = null;
+        $scope.querying = false;
+        $scope.noMoreDocs = false;
       });
 
       $scope.addSort = function () {
@@ -568,10 +640,15 @@ angular.module('corvus.controllers', [])
         $scope.querySortModal.show();
       };
 
-      $scope.editSort = function (sort, index) {
+      $scope.editSort = function (index) {
         currentSortIndex = index;
-        $scope.currentSort = angular.copy(sort);
+        $scope.currentSort = angular.copy($scope.sorts[index]);
         $scope.querySortModal.show();
+      };
+
+      $scope.removeSort = function (index, event) {
+        $scope.sorts.splice(index, 1);
+        event.stopPropagation();
       };
 
       $scope.saveCurrentSort = function () {

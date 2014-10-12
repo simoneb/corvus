@@ -15,7 +15,8 @@
                 </ion-item>
                 <ion-item class="item-select">
                     <span class="input-label">Order</span>
-                    <select ng-model="currentSort.order" ng-options="order for order in sortOrders">
+                    <select ng-model="currentSort.order"
+                            ng-options="order.name for order in sortOrders track by order.name">
                     </select>
                 </ion-item>
             </ion-list>

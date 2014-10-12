@@ -1,0 +1,18 @@
+<ion-modal-view>
+    <ion-header-bar class="bar-dark">
+        <h1 class="title">Results</h1>
+    </ion-header-bar>
+    <ion-content>
+        <ion-list>
+            <ion-item ng-repeat="document in $parent.documents">
+                <h3>{{ document | omitMetadata }}</h3>
+            </ion-item>
+        </ion-list>
+
+        <ion-infinite-scroll
+                ng-if="!noMoreDocs && querying"
+                on-infinite="loadNextPage()"
+                distance="1%">
+        </ion-infinite-scroll>
+    </ion-content>
+</ion-modal-view>

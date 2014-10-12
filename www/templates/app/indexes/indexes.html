@@ -3,7 +3,7 @@
         <div class="card" ng-repeat="(entity, indexes) in indexesByEntityName">
             <ion-item class="item-divider">{{entity || 'Other'}} ({{indexes.length}})</ion-item>
             <ion-item ng-repeat="index in indexes"
-                      ui-sref="app.index.definition({ name: index.Name })">
+                      ui-sref="app.index.query({ name: index.Name })">
                 {{index.Name}}
                 <p class="item-note">{{index.DocsCount}} entries</p>
             </ion-item>
