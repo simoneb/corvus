@@ -1,3 +1,7 @@
+window.ionic.Platform.ready(function() {
+  angular.bootstrap(document, ['corvusApp']);
+});
+
 angular.module('corvusApp',
     ['ionic', 'corvus.controllers', 'corvus.filters', 'corvus.services', 'corvus.directives', 'ngRaven', 'ngCordova'])
 
