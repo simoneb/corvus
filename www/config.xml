@@ -15,6 +15,7 @@
     <access origin="*"/>
 
     <gap:platform name="android"/>
+    <gap:platform name="winphone" />
 
     <preference name="phonegap-version" value="3.6.3"/>
 
@@ -33,6 +34,9 @@
     <icon src="img/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi"/>
     <icon src="img/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi"/>
     <icon src="img/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi"/>
+
+    <icon src="img/launcher-mdpi.png" gap:platform="winphone" />
+    <icon src="img/launcher-xhdpi.png" gap:platform="winphone" gap:role="background" />
 
     <!--<preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="5000" />-->
