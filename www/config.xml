@@ -17,6 +17,8 @@
     <gap:platform name="android"/>
     <gap:platform name="winphone" />
 
+    <hook type="after_prepare" src="020_add_inappbilling_configuration.js" />
+
     <preference name="phonegap-version" value="3.6.3"/>
 
     <platform name="android">
