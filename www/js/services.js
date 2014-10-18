@@ -9,6 +9,7 @@ angular.module('corvus.services', [])
         }
       }
     })
+
     .service('Connections', function ($window) {
       var self = this,
           store = $window.localStorage;
@@ -104,6 +105,7 @@ angular.module('corvus.services', [])
         store.setItem('queries', angular.toJson([query]));
       }
     })
+
     .factory('Dialogs', function ($cordovaDialogs, $ionicPopup) {
       if (navigator.notification) {
         return $cordovaDialogs;
@@ -257,4 +259,65 @@ angular.module('corvus.services', [])
           }
         };
       }
+    })
+
+    .factory('Billing', function ($window) {
+      return $window.inappbilling && angular.extend($window.inappbilling, { available: true }) ||
+          {
+            init: angular.noop,
+            getPurchases: angular.noop,
+            buy: angular.noop,
+            subscribe: angular.noop,
+            consumePurchase: angular.noop,
+            getProductDetails: angular.noop,
+            getAvailableProducts: angular.noop,
+            available: false
+          };
+    })
+    .service('Store', function ($window, $q, Billing) {
+      var self = this,
+          SKUS = {
+            unlimitedDocuments: 'unlimited_number_of_documents'
+          };
+
+      self.hasUnlimitedDocuments = function () {
+        var deferred = $q.defer();
+
+        if (!Billing.available) {
+          deferred.reject('billing not available');
+        } else {
+          Billing.getPurchases(function (result) {
+            console.log('Purchases', result);
+
+            if (_.find(result, { productId: SKUS.unlimitedDocuments })) {
+              deferred.resolve();
+            } else {
+              deferred.reject('product not bought');
+            }
+          }, function (err) {
+            deferred.reject(err);
+          });
+        }
+
+        return deferred.promise;
+      };
+
+      self.buyUnlimitedDocuments = function () {
+        var deferred = $q.defer();
+
+        if (!Billing.available) {
+          deferred.reject();
+        } else {
+          Billing.buy(function (purchase) {
+                console.log('Purchase', purchase);
+
+                deferred.resolve();
+              }, function (err) {
+                deferred.reject(err);
+              },
+              SKUS.unlimitedDocuments);
+        }
+
+        return deferred.promise;
+      };
     });

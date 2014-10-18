@@ -5,7 +5,7 @@ window.ionic.Platform.ready(function () {
 angular.module('corvusApp',
     ['ionic', 'corvus.controllers', 'corvus.filters', 'corvus.services', 'corvus.directives', 'ngRaven', 'ngCordova'])
 
-    .run(function ($ionicPlatform) {
+    .run(function ($ionicPlatform, Billing) {
       $ionicPlatform.ready(function () {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -17,14 +17,9 @@ angular.module('corvusApp',
           StatusBar.styleDefault();
         }
 
-        if (inappbilling) {
-          inappbilling.init(function () {
-                console.log('successful initialization of inappbilling', arguments);
-              },
-              function () {
-                console.log('failed initialization of inappbilling', arguments);
-              })
-        }
+        Billing.init(angular.noop, function () {
+          Billing.available = false;
+        });
       });
     })
 

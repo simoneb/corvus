@@ -2,6 +2,8 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var xeditor = require("gulp-xml-editor");
 var jeditor = require("gulp-json-editor");
+var fmt = require('util').format;
+var path = require('path');
 
 require('shelljs/global');
 
@@ -73,3 +75,23 @@ gulp.task('git-check', function (done) {
   }
   done();
 });
+
+gulp.task('release', function () {
+  var jarSigner = path.join(process.env.JAVA_HOME, 'bin', 'jarsigner.exe'),
+      zipAlign = process.env['PROGRAMFILES(x86)'] + '/Android/android-sdk/build-tools/20.0.0/zipalign.exe';
+
+  pushd('platforms/android/ant-build');
+
+  rm('corvus-release.apk');
+
+  exec('cordova build --release android');
+
+  exec(fmt('"%s" -verbose -sigalg SHA1withRSA -digestalg SHA1', jarSigner) +
+  fmt(' -keystore ', path.join(process.env.userprofile, 'android-release-key.keystore')) +
+  ' -storepass QyezKqpSLQkm corvus-release-unsigned.apk android-key');
+
+  exec(fmt('"%s" -v 4 corvus-release-unsigned.apk corvus-release.apk', zipAlign));
+
+  popd();
+});
+

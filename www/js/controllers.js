@@ -18,7 +18,7 @@ angular.module('corvus.controllers', [])
     })
 
     .controller('EditConnectionCtrl',
-    function ($scope, $state, $q, $timeout, $stateParams, $ionicGesture, raven, Dialogs, Toast, Spinner, Connections) {
+    function ($scope, $state, $q, $timeout, $stateParams, $ionicGesture, raven, Dialogs, Toast, Spinner, Connections, Store) {
       var name = $stateParams.name,
           formElement = angular.element(document.getElementById('connectionForm'));
 
@@ -45,9 +45,18 @@ angular.module('corvus.controllers', [])
       function checkPurchase(ravenClient) {
         return ravenClient.getStats()
             .then(function (res) {
-              if (res.data.CountOfDocuments > 2000) {
-                return Toast.showLongCenter('Your target server or database contains more than 2000 documents. ' +
-                'There will be a limit to the number of documents you can access for free, for now just enjoy!');
+              if (res.data.CountOfDocuments > 1000) {
+
+                return Store.hasUnlimitedDocuments().catch(function (err) {
+                  console.log('Error', err);
+
+                  return Store.buyUnlimitedDocuments().then(function () {
+                    return Toast.showShortBottom('Product bought');
+                  }, function (err) {
+                    console.log('Error', err);
+                    return $q.reject(res);
+                  });
+                });
               }
             });
       }
