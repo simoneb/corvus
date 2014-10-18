@@ -64,8 +64,11 @@ gulp.task('bump-package.json', function () {
 gulp.task('bump-config.xml', ['bump-package.json'], function () {
   return gulp.src('www/config.xml')
       .pipe(xeditor(function (xml) {
-        xml.root().attr({ version: increaseRevision(xml.root().attr('version').value()) });
-        xml.root().attr({ versionCode: increaseRevision(xml.root().attr('versionCode').value()) });
+        var version = xml.root().attr('version').value();
+        var versionCode = xml.root().attr('android-versionCode').value();
+
+        xml.root().attr({ version: increaseRevision(version) });
+        xml.root().attr({ 'android-versionCode': increaseRevision(versionCode) });
         return xml;
       }))
       .pipe(gulp.dest('www'));
