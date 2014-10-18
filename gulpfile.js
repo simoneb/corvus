@@ -9,6 +9,7 @@ var newVersion;
 
 gulp.task('default', ['install']);
 
+// TODO: move this to a cordova hook
 gulp.task('install', ['git-check'], function () {
   exec('git submodule init');
 
