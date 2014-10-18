@@ -13,7 +13,7 @@ gulp.task('default', ['install']);
 
 // TODO: move this to a cordova hook
 gulp.task('install', ['git-check'], function () {
-  exec('git submodule init');
+  exec('git submodule init && git submodule update');
 
   ['com.ionic.keyboard',
     'org.apache.cordova.console',
