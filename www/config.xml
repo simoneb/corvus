@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets"
-        xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.12">
+<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.13">
 
     <name>Corvus</name>
 
@@ -12,58 +11,57 @@
         Simone Busoli
     </author>
 
-    <content src="index.html" />
-    <access origin="*" />
+    <content src="index.html"/>
+    <access origin="*"/>
 
-    <gap:platform name="android" />
-    <gap:platform name="winphone" />
+    <gap:platform name="android"/>
+    <gap:platform name="winphone"/>
 
-    <hook type="after_prepare" src="020_add_inappbilling_configuration.js" />
+    <hook type="after_prepare" src="020_add_inappbilling_configuration.js"/>
 
-    <preference name="phonegap-version" value="3.6.3" />
+    <preference name="phonegap-version" value="3.6.3"/>
 
     <platform name="android">
-        <icon src="www/img/launcher-mdpi.png" density="ldpi" />
-        <icon src="www/img/launcher-mdpi.png" density="mdpi" />
-        <icon src="www/img/launcher-hdpi.png" density="hdpi" />
-        <icon src="www/img/launcher-xhdpi.png" density="xhdpi" />
-        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi" />
-        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi" />
+        <icon src="www/img/launcher-mdpi.png" density="ldpi"/>
+        <icon src="www/img/launcher-mdpi.png" density="mdpi"/>
+        <icon src="www/img/launcher-hdpi.png" density="hdpi"/>
+        <icon src="www/img/launcher-xhdpi.png" density="xhdpi"/>
+        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi"/>
+        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi"/>
     </platform>
 
-    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi" />
-    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi" />
-    <icon src="img/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi" />
-    <icon src="img/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi" />
-    <icon src="img/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi" />
-    <icon src="img/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi" />
+    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi"/>
+    <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi"/>
+    <icon src="img/launcher-hdpi.png" gap:platform="android" gap:qualifier="hdpi"/>
+    <icon src="img/launcher-xhdpi.png" gap:platform="android" gap:qualifier="xhdpi"/>
+    <icon src="img/launcher-xxhdpi.png" gap:platform="android" gap:qualifier="xxhdpi"/>
+    <icon src="img/launcher-xxxhdpi.png" gap:platform="android" gap:qualifier="xxxhdpi"/>
 
-    <icon src="img/launcher-mdpi.png" gap:platform="winphone" />
-    <icon src="img/launcher-xhdpi.png" gap:platform="winphone" gap:role="background" />
+    <icon src="img/launcher-mdpi.png" gap:platform="winphone"/>
+    <icon src="img/launcher-xhdpi.png" gap:platform="winphone" gap:role="background"/>
 
     <!--<preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="5000" />-->
     <!--<preference name="auto-hide-splash-screen" value="false" />-->
 
-    <gap:plugin name="com.ionic.keyboard" />
-    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog" />
-    <gap:plugin name="nl.x-services.plugins.toast" />
-    <gap:plugin name="org.apache.cordova.console" />
-    <gap:plugin name="org.apache.cordova.dialogs" />
+    <gap:plugin name="com.ionic.keyboard"/>
+    <gap:plugin name="hu.dpal.phonegap.plugins.SpinnerDialog"/>
+    <gap:plugin name="nl.x-services.plugins.toast"/>
+    <gap:plugin name="org.apache.cordova.console"/>
+    <gap:plugin name="org.apache.cordova.dialogs"/>
     <gap:plugin name="com.mcm.plugins.androidinappbilling">
-        <param name="BILLING_KEY"
-               value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlWtqn9TWvawMDRrykB0OipCwYnArAkinOPq7kb7B7qxokqTmS1maKlxzeAPxwvzYP49u9GNeNJfsqup2E4dR0hiigHQuqmJROUNEOtTxJaIhNLKQaOlC7Bdbvi1n00a5xbb7+kNlIPlo0rtuE2vrj6L3mGV7zKGmsCMU2mPRcE96jMc/kkWsUQnx373MJsgoXq0plUdrkMLhByS4ufKMS1lAebvRPsdkO1dCE3v6ktDyfcdjijMcgTVCqIHtUh6fbidmUClxkNOTsJms+muZyClFGQwvYfZ1+rb00FCcdN6IohJw5crzC3VXL6zlJQhB5SUsv+DuRi9msp0nLFGANwIDAQAB" />
+        <param name="BILLING_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlWtqn9TWvawMDRrykB0OipCwYnArAkinOPq7kb7B7qxokqTmS1maKlxzeAPxwvzYP49u9GNeNJfsqup2E4dR0hiigHQuqmJROUNEOtTxJaIhNLKQaOlC7Bdbvi1n00a5xbb7+kNlIPlo0rtuE2vrj6L3mGV7zKGmsCMU2mPRcE96jMc/kkWsUQnx373MJsgoXq0plUdrkMLhByS4ufKMS1lAebvRPsdkO1dCE3v6ktDyfcdjijMcgTVCqIHtUh6fbidmUClxkNOTsJms+muZyClFGQwvYfZ1+rb00FCcdN6IohJw5crzC3VXL6zlJQhB5SUsv+DuRi9msp0nLFGANwIDAQAB"/>
     </gap:plugin>
-    <gap:plugin name="nl.x-services.plugins.actionsheet" />
-    <gap:plugin name="org.apache.cordova.inappbrowser" />
-    <gap:plugin name="org.apache.cordova.statusbar" />
+    <gap:plugin name="nl.x-services.plugins.actionsheet"/>
+    <gap:plugin name="org.apache.cordova.inappbrowser"/>
+    <gap:plugin name="org.apache.cordova.statusbar"/>
 
     <!-- from the ionic template -->
-    <preference name="webviewbounce" value="false" />
-    <preference name="UIWebViewBounce" value="false" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackupWebStorage" value="none" />
+    <preference name="webviewbounce" value="false"/>
+    <preference name="UIWebViewBounce" value="false"/>
+    <preference name="DisallowOverscroll" value="true"/>
+    <preference name="BackupWebStorage" value="none"/>
     <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" onload="true" />
+        <param name="ios-package" value="CDVStatusBar" onload="true"/>
     </feature>
 </widget>
