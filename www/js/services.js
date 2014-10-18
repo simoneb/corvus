@@ -280,23 +280,21 @@ angular.module('corvus.services', [])
             unlimitedDocuments: 'unlimited_number_of_documents'
           };
 
+      function billingAvailableOrReject(deferred) {
+        if (self.available) return true;
+
+        deferred.reject('billing not available');
+      }
+
+      self.available = Billing.available;
+
       self.hasUnlimitedDocuments = function () {
         var deferred = $q.defer();
 
-        if (!Billing.available) {
-          deferred.reject('billing not available');
-        } else {
-          Billing.getPurchases(function (result) {
-            console.log('Purchases', result);
-
-            if (_.find(result, { productId: SKUS.unlimitedDocuments })) {
-              deferred.resolve();
-            } else {
-              deferred.reject('product not bought');
-            }
-          }, function (err) {
-            deferred.reject(err);
-          });
+        if (billingAvailableOrReject(deferred)) {
+          Billing.getPurchases(function (purchases) {
+            deferred.resolve(_.find(purchases, { productId: SKUS.unlimitedDocuments }));
+          }, angular.bind(deferred, deferred.reject));
         }
 
         return deferred.promise;
@@ -305,16 +303,10 @@ angular.module('corvus.services', [])
       self.buyUnlimitedDocuments = function () {
         var deferred = $q.defer();
 
-        if (!Billing.available) {
-          deferred.reject();
-        } else {
-          Billing.buy(function (purchase) {
-                console.log('Purchase', purchase);
-
-                deferred.resolve();
-              }, function (err) {
-                deferred.reject(err);
-              },
+        if (billingAvailableOrReject(deferred)) {
+          Billing.buy(
+              angular.bind(deferred, deferred.resolve),
+              angular.bind(deferred, deferred.reject),
               SKUS.unlimitedDocuments);
         }
 

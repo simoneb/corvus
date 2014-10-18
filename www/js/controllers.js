@@ -43,22 +43,24 @@ angular.module('corvus.controllers', [])
       }
 
       function checkPurchase(ravenClient) {
-        return ravenClient.getStats()
-            .then(function (res) {
-              if (res.data.CountOfDocuments > 1000) {
-
-                return Store.hasUnlimitedDocuments().catch(function (err) {
-                  console.log('Error', err);
-
-                  return Store.buyUnlimitedDocuments().then(function () {
-                    return Toast.showShortBottom('Product bought');
-                  }, function (err) {
-                    console.log('Error', err);
-                    return $q.reject(res);
-                  });
+        return ravenClient.getStats().then(function (res) {
+          if (res.data.CountOfDocuments > 100) {
+            return Store.hasUnlimitedDocuments().then(function (purchase) {
+              if (!purchase) {
+                return Store.buyUnlimitedDocuments().then(function () {
+                  return Toast.showShortBottom('Document number limit removed, thanks for your support!');
+                }, function (err) {
+                  Toast.showShortBottom('Purchase failed');
+                  return $q.reject(err);
                 });
               }
+            }, function (err) {
+              Toast.showLongCenter(
+                  'Too many documents but checking your purchases failed');
+              return $q.reject(err);
             });
+          }
+        });
       }
 
       $scope.test = function () {
