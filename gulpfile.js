@@ -40,15 +40,22 @@ gulp.task('install', ['git-check'], function () {
 });
 
 gulp.task('bump', ['bump-package.json', 'bump-config.xml'], function () {
-  exec('git add package.json www/config.xml && git commit -m "Bump version to ' + newVersion + '"');
-  console.log(gutil.colors.green('New version: ' + newVersion));
+  return gulp.src('package.json')
+      .pipe(jeditor(function (json) {
+        console.log(gutil.colors.green('New version: ' + json.version));
+        exec(fmt('git add package.json www/config.xml && git commit -m "Bump version to %s"', json.version));
+        return json;
+      }));
 });
+
+function increaseRevision(version) {
+  return version.replace(/\d+$/, parseInt(/\d+$/.exec(version), 10) + 1);
+}
 
 gulp.task('bump-package.json', function () {
   return gulp.src('package.json')
       .pipe(jeditor(function (json) {
-        var patch = parseInt(/\d+$/.exec(json.version), 10) + 1;
-        json.version = newVersion = json.version.replace(/\d+$/, patch);
+        json.version = increaseRevision(json.version);
         return json;
       }))
       .pipe(gulp.dest('.'));
@@ -57,7 +64,8 @@ gulp.task('bump-package.json', function () {
 gulp.task('bump-config.xml', ['bump-package.json'], function () {
   return gulp.src('www/config.xml')
       .pipe(xeditor(function (xml) {
-        xml.root().attr({ version: newVersion });
+        xml.root().attr({ version: increaseRevision(xml.root().attr('version').value()) });
+        xml.root().attr({ versionCode: increaseRevision(xml.root().attr('versionCode').value()) });
         return xml;
       }))
       .pipe(gulp.dest('www'));
