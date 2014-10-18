@@ -1,4 +1,4 @@
-window.ionic.Platform.ready(function() {
+window.ionic.Platform.ready(function () {
   angular.bootstrap(document, ['corvusApp']);
 });
 
@@ -15,6 +15,15 @@ angular.module('corvusApp',
         if (window.StatusBar) {
           // org.apache.cordova.statusbar required
           StatusBar.styleDefault();
+        }
+
+        if (inappbilling) {
+          inappbilling.init(function () {
+                console.log('successful initialization of inappbilling', arguments);
+              },
+              function () {
+                console.log('failed initialization of inappbilling', arguments);
+              })
         }
       });
     })
