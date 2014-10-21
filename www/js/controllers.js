@@ -14,7 +14,6 @@ angular.module('corvus.controllers', [])
 
         $state.go('databases', { connectionName: connectionName });
       };
-
     })
 
     .controller('EditConnectionCtrl',
@@ -45,18 +44,23 @@ angular.module('corvus.controllers', [])
       function checkPurchase(ravenClient) {
         return ravenClient.getStats().then(function (res) {
           if (res.data.CountOfDocuments > 100) {
+            LE.log('Dealing with more than free allowed doc limit:', res.data.CountOfDocuments);
+
             return Store.hasUnlimitedDocuments().then(function (purchase) {
+              LE.log('Unlimited number of documents purchase', purchase);
+
               if (!purchase) {
                 return Store.buyUnlimitedDocuments().then(function () {
                   return Toast.showShortBottom('Document number limit removed, thanks for your support!');
                 }, function (err) {
+                  LE.warn('Purchase failed', err);
                   Toast.showShortBottom('Purchase failed');
                   return $q.reject(err);
                 });
               }
             }, function (err) {
               Toast.showLongCenter(
-                  'Too many documents but checking your purchases failed');
+                  'Too many documents but we can\'t check your purchases now');
               return $q.reject(err);
             });
           }

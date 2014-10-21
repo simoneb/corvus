@@ -1,3 +1,8 @@
+LE.init({
+  token: '6f2f77f7-19ed-489d-a3bb-a6c5f4be4a99',
+  print: true
+});
+
 window.ionic.Platform.ready(function () {
   angular.bootstrap(document, ['corvusApp']);
 });
@@ -17,7 +22,11 @@ angular.module('corvusApp',
           StatusBar.styleDefault();
         }
 
-        Billing.init(angular.noop, function () {
+        Billing.init(function () {
+          LE.warn('Billing initialization succeeded', arguments);
+          Billing.available = true;
+        }, function () {
+          LE.warn('Billing initialization failed', arguments);
           Billing.available = false;
         });
       });

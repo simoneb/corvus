@@ -293,6 +293,7 @@ angular.module('corvus.services', [])
 
         if (billingAvailableOrReject(deferred)) {
           Billing.getPurchases(function (purchases) {
+            LE.log('User purchases', purchases);
             deferred.resolve(_.find(purchases, { productId: SKUS.unlimitedDocuments }));
           }, angular.bind(deferred, deferred.reject));
         }

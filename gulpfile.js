@@ -7,8 +7,6 @@ var path = require('path');
 
 require('shelljs/global');
 
-var newVersion;
-
 gulp.task('default', ['install']);
 
 // TODO: move this to a cordova hook
