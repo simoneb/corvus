@@ -23,7 +23,7 @@ angular.module('corvusApp',
         }
 
         Billing.init(function () {
-          LE.warn('Billing initialization succeeded', arguments);
+          LE.info('Billing initialization succeeded', arguments);
           Billing.available = true;
         }, function () {
           LE.warn('Billing initialization failed', arguments);
