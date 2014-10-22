@@ -10,28 +10,6 @@ window.ionic.Platform.ready(function () {
 angular.module('corvusApp',
     ['ionic', 'corvus.controllers', 'corvus.filters', 'corvus.services', 'corvus.directives', 'ngRaven', 'ngCordova'])
 
-    .run(function ($ionicPlatform, Billing) {
-      $ionicPlatform.ready(function () {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
-          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-        }
-        if (window.StatusBar) {
-          // org.apache.cordova.statusbar required
-          StatusBar.styleDefault();
-        }
-
-        Billing.init(function () {
-          LE.info('Billing initialization succeeded', arguments);
-          Billing.available = true;
-        }, function () {
-          LE.warn('Billing initialization failed', arguments);
-          Billing.available = false;
-        });
-      });
-    })
-
     .config(function ($stateProvider, $urlRouterProvider, ravenProvider) {
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
@@ -255,5 +233,14 @@ angular.module('corvusApp',
           });
 
       $urlRouterProvider.otherwise('/connections/list');
+    })
+    .run(function ($ionicPlatform) {
+      $ionicPlatform.ready(function () {
+        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        }
+        if (window.StatusBar) {
+          StatusBar.styleDefault();
+        }
+      });
     });
-

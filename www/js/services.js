@@ -262,17 +262,30 @@ angular.module('corvus.services', [])
     })
 
     .factory('Billing', function ($window) {
-      return $window.inappbilling && angular.extend($window.inappbilling, { available: true }) ||
-          {
-            init: angular.noop,
-            getPurchases: angular.noop,
-            buy: angular.noop,
-            subscribe: angular.noop,
-            consumePurchase: angular.noop,
-            getProductDetails: angular.noop,
-            getAvailableProducts: angular.noop,
-            available: false
-          };
+      if ($window.inappbilling) {
+        // possible race condition here
+        $window.inappbilling.init(function () {
+          $window.inappbilling.available = true;
+        }, function () {
+          LE.warn('Billing initialization failed', arguments);
+          $window.inappbilling.available = false;
+        });
+
+        return $window.inappbilling;
+      }
+
+      LE.warn('window.inappbilling does not exist');
+
+      return {
+        init: angular.noop,
+        getPurchases: angular.noop,
+        buy: angular.noop,
+        subscribe: angular.noop,
+        consumePurchase: angular.noop,
+        getProductDetails: angular.noop,
+        getAvailableProducts: angular.noop,
+        available: false
+      };
     })
     .service('Store', function ($window, $q, Billing) {
       var self = this,
@@ -280,20 +293,17 @@ angular.module('corvus.services', [])
             unlimitedDocuments: 'unlimited_number_of_documents'
           };
 
-      function billingAvailableOrReject(deferred) {
-        if (self.available) return true;
+      function billingAvailableOtherwiseReject(deferred) {
+        if (Billing.available) return true;
 
         deferred.reject('billing not available');
       }
 
-      self.available = Billing.available;
-
       self.hasUnlimitedDocuments = function () {
         var deferred = $q.defer();
 
-        if (billingAvailableOrReject(deferred)) {
+        if (billingAvailableOtherwiseReject(deferred)) {
           Billing.getPurchases(function (purchases) {
-            LE.log('User purchases', purchases);
             deferred.resolve(_.find(purchases, { productId: SKUS.unlimitedDocuments }));
           }, angular.bind(deferred, deferred.reject));
         }
@@ -304,7 +314,7 @@ angular.module('corvus.services', [])
       self.buyUnlimitedDocuments = function () {
         var deferred = $q.defer();
 
-        if (billingAvailableOrReject(deferred)) {
+        if (billingAvailableOtherwiseReject(deferred)) {
           Billing.buy(
               angular.bind(deferred, deferred.resolve),
               angular.bind(deferred, deferred.reject),
