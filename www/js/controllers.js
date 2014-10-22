@@ -54,11 +54,19 @@ angular.module('corvus.controllers', [])
                   return Toast.showShortBottom('Document number limit removed, thanks for your support!');
                 }, function (err) {
                   LE.warn('Purchase failed', err);
-                  Toast.showShortBottom('Purchase failed');
+
+                  if (/-1005/.test(err)) {
+                    Toast.showShortBottom('Purchase canceled');
+                  } else {
+                    Toast.showShortBottom('Purchase failed');
+                  }
+
                   return $q.reject(err);
                 });
               }
             }, function (err) {
+              LE.warn('Cannot check purchase', err);
+
               Toast.showLongCenter(
                   'Too many documents but we can\'t check your purchases now');
               return $q.reject(err);
