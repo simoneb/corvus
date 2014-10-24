@@ -251,8 +251,13 @@ angular.module('corvusApp',
       });
     })
 
-    .run(function checkPurchasesOnGetStats($rootScope, $q, Dialogs, Store, Toast, MaxNumberOfFreeDocuments) {
+    .run(function checkPurchasesOnGetStats($rootScope, $q, $location, Dialogs, Store, Toast, MaxNumberOfFreeDocuments) {
       var originalGetStats = RavenClient.prototype.getStats;
+
+      function rejectAndGoHome(err) {
+        $location.path('/');
+        return $q.reject(err);
+      }
 
       function doPurchase() {
         return Store.buyUnlimitedDocuments().then(function () {
@@ -266,7 +271,7 @@ angular.module('corvusApp',
             Toast.showShortBottom('Purchase failed');
           }
 
-          return $q.reject(err);
+          return rejectAndGoHome(err);
         });
       }
 
@@ -292,17 +297,17 @@ angular.module('corvusApp',
                         return getStatsRes;
                       });
                     default :
-                      return $q.reject();
+                      return rejectAndGoHome();
                   }
-                }, function () {
-                  return $q.reject();
+                }, function (err) {
+                  return rejectAndGoHome(err);
                 });
           }
         }, function (err) {
           LE.warn('Cannot check purchase', err);
 
           Toast.showLongCenter('Too many documents but we can\'t check your purchases now');
-          return $q.reject(err);
+          return rejectAndGoHome(err);
         });
       }
 
