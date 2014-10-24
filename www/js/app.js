@@ -234,6 +234,7 @@ angular.module('corvusApp',
 
       $urlRouterProvider.otherwise('/connections/list');
     })
+
     .run(function ($ionicPlatform) {
       $ionicPlatform.ready(function () {
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -243,4 +244,46 @@ angular.module('corvusApp',
           StatusBar.styleDefault();
         }
       });
+    })
+
+    .run(function ($q, Store, Toast) {
+      var originalGetStats = RavenClient.prototype.getStats;
+
+      function checkPurchases(getStatsRes) {
+        var documents = getStatsRes.data.CountOfDocuments;
+
+        if (documents > 100) {
+          LE.log('Dealing with more than free allowed doc limit:', documents);
+
+          return Store.hasUnlimitedDocuments().then(function (purchase) {
+            LE.log('Unlimited number of documents purchase', purchase);
+
+            if (!purchase) {
+              return Store.buyUnlimitedDocuments().then(function () {
+                return Toast.showShortBottom('Document number limit removed, thanks for your support!');
+              }, function (err) {
+                LE.warn('Purchase failed', err);
+
+                if (/-1005/.test(err)) {
+                  Toast.showShortBottom('Purchase canceled');
+                } else {
+                  Toast.showShortBottom('Purchase failed');
+                }
+
+                return $q.reject(err);
+              });
+            }
+          }, function (err) {
+            LE.warn('Cannot check purchase', err);
+
+            Toast.showLongCenter(
+                'Too many documents but we can\'t check your purchases now');
+            return $q.reject(err);
+          });
+        }
+      }
+
+      RavenClient.prototype.getStats = function () {
+        return originalGetStats.apply(this, Array.prototype.slice.call(arguments)).then(checkPurchases);
+      }
     });
