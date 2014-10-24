@@ -1,6 +1,7 @@
 LE.init({
   token: '6f2f77f7-19ed-489d-a3bb-a6c5f4be4a99',
-  print: true
+  print: true,
+  catchall: true
 });
 
 window.ionic.Platform.ready(function () {
@@ -246,32 +247,47 @@ angular.module('corvusApp',
       });
     })
 
-    .run(function ($q, Store, Toast) {
+    .run(function checkPurchasesOnGetStats($rootScope, $q, Dialogs, Store, Toast) {
       var originalGetStats = RavenClient.prototype.getStats;
 
-      function checkPurchases(getStatsRes) {
-        var documents = getStatsRes.data.CountOfDocuments;
+      function doPurchase() {
+        return Store.buyUnlimitedDocuments().then(function () {
+          return Toast.showShortBottom('Document number limit removed, thanks for your support!');
+        }, function (err) {
+          LE.warn('Purchase failed', err);
 
-        if (documents > 100) {
-          LE.log('Dealing with more than free allowed doc limit:', documents);
+          if (/-1005/.test(err)) {
+            Toast.showShortBottom('Purchase canceled');
+          } else {
+            Toast.showShortBottom('Purchase failed');
+          }
+
+          return $q.reject(err);
+        });
+      }
+
+      function checkPurchases(getStatsRes) {
+        var documentCount = getStatsRes.data.CountOfDocuments;
+
+        if (documentCount > 100) {
+          LE.log('Dealing with more than free allowed doc limit:', documentCount);
 
           return Store.hasUnlimitedDocuments().then(function (purchase) {
             LE.log('Unlimited number of documents purchase', purchase);
 
             if (!purchase) {
-              return Store.buyUnlimitedDocuments().then(function () {
-                return Toast.showShortBottom('Document number limit removed, thanks for your support!');
-              }, function (err) {
-                LE.warn('Purchase failed', err);
-
-                if (/-1005/.test(err)) {
-                  Toast.showShortBottom('Purchase canceled');
-                } else {
-                  Toast.showShortBottom('Purchase failed');
-                }
-
-                return $q.reject(err);
-              });
+              return Dialogs.confirm('Your database contains more documents than you can access for free.\n\n' +
+              'Do you want to support the development by purchasing a license?', 'Purchase required')
+                  .then(function (buttonIndex) {
+                    switch (buttonIndex) {
+                      case 1:
+                        return doPurchase();
+                      case 2:
+                        return $q.reject();
+                    }
+                  }, function () {
+                    return $q.reject();
+                  });
             }
           }, function (err) {
             LE.warn('Cannot check purchase', err);
@@ -285,5 +301,5 @@ angular.module('corvusApp',
 
       RavenClient.prototype.getStats = function () {
         return originalGetStats.apply(this, Array.prototype.slice.call(arguments)).then(checkPurchases);
-      }
+      };
     });

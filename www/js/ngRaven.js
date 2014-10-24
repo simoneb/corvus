@@ -215,252 +215,270 @@ function RavenClient($injector, $rootScope, options) {
     delete options.database;
   }
 
-  var http = $injector.instantiate(HttpClient, { options: options });
+  this.http = $injector.instantiate(HttpClient, { options: options });
 
   this.isV3 = function () {
     return /^3/.test(options.serverVersion);
   };
 
-  /**
-   * Gets the databases on the server
-   * @param {object=} params Arguments to pass on the query string
-   * @param {number} [params.start] Index of first result to return
-   * @param {number} [params.pageSize] Maximum number of results to return
-   * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
-   * */
-  this.getDatabases = function (params) {
-    return http.get('/databases', params);
-  };
-
-  /**
-   * Gets the file systems on the server
-   * @param {object=} params Arguments to pass on the query string
-   * @param {number} [params.start] Index of first result to return
-   * @param {number} [params.pageSize] Maximum number of results to return
-   * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
-   * */
-  this.getFileSystems = function () {
-    return http.get('/fs');
-  };
-
-  /**
-   * Retrieves a document by its id
-   * @param {string} id The id of the document
-   * */
-  this.getDocument = function (id, params) {
-    return http.get('/docs/' + id, params);
-  };
-
-  /**
-   * Saves a document
-   * @param {string} id The id of the document
-   * @param {object} metadata The metadata of the document
-   * @param {object} data The contents of the document
-   * */
-  this.saveDocument = function (id, metadata, data, params) {
-    return http.put('/docs/' + id, data, {
-      'Raven-Entity-Name': metadata['Raven-Entity-Name'],
-      'Raven-Clr-Type': metadata['Raven-Clr-Type'],
-      'If-None-Match': metadata['@etag']
-    }, params)
-        .then(function (res) {
-          $rootScope.$broadcast('raven:document:saved', id, metadata, data, res);
-          return res;
-        });
-  };
-
-  this.deleteDocument = function (id, params) {
-    return http.del('/docs/' + id, params)
-        .then(function (res) {
-          $rootScope.$broadcast('raven:document:deleted', id, res);
-          return res;
-        });
-  };
-
-  this.deleteIndex = function (name, params) {
-    return http.del('/indexes/' + name, params)
-        .then(function (res) {
-          $rootScope.$broadcast('raven:index:deleted', name, res);
-          return res;
-        });
-  };
-
-  /**
-   * Gets a list of documents
-   * @param {object=} params Arguments to pass on the query string
-   * @param {number} [params.start] Index of first result to return
-   * @param {number} [params.pageSize] Maximum number of results to return
-   * @param {boolean} [params.metadata-only=false] Whether to return only metadata
-   * @param {string} [params.startsWith]
-   * @param {string} [params.exclude]
-   * */
-  this.getDocuments = function (params) {
-    return http.get('/docs', params);
-  };
-
-  this.getAlerts = function (params) {
-    return http.get('/docs/Raven/Alerts', params);
-  };
-
-  /**
-   * Queries an index
-   * @param {string} indexName
-   * @param {(object|string)=} query
-   * @param {(string|string[])=} params.sort Example: LastModified
-   * @param {string=} params.operator Example: AND, OR
-   * @param {string=} params.resultsTransformer
-   * @param {string=} params.fetch Example: __all_fields
-   * @param {string=} params.debug Example: entries
-   * @param {string=} params.start
-   * @param {string=} params.pageSize
-   * */
-  this.queryIndex = function (indexName, query, params) {
-    function buildQuery() {
-      if (angular.isString(query)) return query;
-
-      if (angular.isObject(query))
-        return _.reduce(query,
-            function (acc, val, key) {
-              return acc + ' ' + key + ':' + val
-            }, '').substr(1);
-    }
-
-    return http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery() }, params));
-  };
-
-  /*
-   * metadata-only true/false
-   * */
-  this.queries = function (params) {
-    return http.get('/queries', params);
-  };
-
-  /*
-   field
-   fromValue
-   pageSize
-   */
-  this.getTerms = function (indexName, params) {
-    return http.get('/terms/' + indexName, params);
-  };
-
-  /*
-   parallel: yes / no
-   * */
-  this.multiGet = function (requests, parallel, params) {
-    return http.post('/multi_get', requests, angular.extend({ parallel: parallel ? 'yes' : 'no' }, params));
-  };
-
-  this.debug = {
-    getUserInfo: function (params) {
-      return http.get('/debug/user-info', params);
-    },
-    getMetrics: function (params) {
-      return http.get('/debug/metrics', params);
-    },
-    getConfig: function (params) {
-      return http.get('/debug/config', params);
-    },
-    getTasks: function (params) {
-      return http.get('/debug/tasks', params);
-    },
-    getQueries: function (params) {
-      return http.get('/debug/queries');
-    },
-    getChanges: function (params) {
-      return http.get('/debug/changes');
-    },
-    getCurrentlyIndexing: function (params) {
-      return http.get('/debug/currently-indexing');
-    },
-    getRoutes: function (params) {
-      return http.get('/debug/routes');
-    },
-    getRequestTracing: function (params) {
-      return http.get('/debug/request-tracing');
-    },
-    getSlowDocCounts: function (params) {
-      return http.get('/debug/sl0w-d0c-c0unts');
-    },
-    getIdentities: function (params) {
-      return http.get('/debug/identities');
-    },
-    getIndexingPerfStats: function (params) {
-      return http.get('/debug/indexing-perf-stats');
-    },
-    suggestIndexMerge: function (params) {
-      return http.get('/debug/suggest-index-merge');
-    }
-  };
-
-  this.getLogs = function (params) {
-    return http.get('/logs', params);
-  };
-
-  this.getStats = function (params) {
-    return http.get('/stats', params)
-  };
-
-  this.getRunningTasks = function (params) {
-    return http.get('/operations');
-  };
-
-  /*
-   * definition yes / no
-   * */
-  this.getIndex = function (indexName, params) {
-    return http.get('/indexes/' + indexName, params);
-  };
-
-  this.getTransformers = function (params) {
-    return http.get('/transformers', params);
-  };
-
-  this.getTransformer = function (transformerName, params) {
-    return http.get('/transformers/' + transformerName, params);
-  };
-
-  this.getBuildVersion = function (params) {
-    return http.get('/build/version', params);
-  };
-
-  this.getLicenseStatus = function (params) {
-    return http.get('/license/status', params);
-  };
-
-  /*
-   * data:
-   * {
-   "Settings": {
-   "Raven/DataDir": "~\\Databases\\firstDb",
-   "Raven/ActiveBundles": "PeriodicBackup"
-   },
-   "SecuredSettings": {},
-   "Disabled": false
-   }
-   * */
-  this.createDatabase = function (databaseName, data, params) {
-    return http.put('/admin/databases/' + databaseName, data, {}, params);
-  };
-
-  // v3 only?
-  this.getSingleAuthToken = function () {
-    return http.get('/singleAuthToken');
-  };
-
-  /**
-   * Gets the facets
-   * @param {string} indexName The name of the index to query
-   * @param {object[]} [params.facets] Example: [{"Name":"Tag"}]
-   * */
-  this.getFacets = function (indexName, params) {
-    if (params && params.facets) {
-      params.facets = [params.facets];
-    }
-
-    return http.get('/facets/' + indexName, params);
-  };
+  this.debug.init(this.http);
 }
+
+/**
+ * Gets the databases on the server
+ * @param {object=} params Arguments to pass on the query string
+ * @param {number} [params.start] Index of first result to return
+ * @param {number} [params.pageSize] Maximum number of results to return
+ * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
+ * */
+RavenClient.prototype.getDatabases = function (params) {
+  return this.http.get('/databases', params);
+};
+
+/**
+ * Gets the file systems on the server
+ * @param {object=} params Arguments to pass on the query string
+ * @param {number} [params.start] Index of first result to return
+ * @param {number} [params.pageSize] Maximum number of results to return
+ * @param {boolean} [params.getAdditionalData=false] Whether to return additional data
+ * */
+RavenClient.prototype.getFileSystems = function () {
+  return this.http.get('/fs');
+};
+
+/**
+ * Retrieves a document by its id
+ * @param {string} id The id of the document
+ * */
+RavenClient.prototype.getDocument = function (id, params) {
+  return this.http.get('/docs/' + id, params);
+};
+
+/**
+ * Saves a document
+ * @param {string} id The id of the document
+ * @param {object} metadata The metadata of the document
+ * @param {object} data The contents of the document
+ * */
+RavenClient.prototype.saveDocument = function (id, metadata, data, params) {
+  return this.http.put('/docs/' + id, data, {
+    'Raven-Entity-Name': metadata['Raven-Entity-Name'],
+    'Raven-Clr-Type': metadata['Raven-Clr-Type'],
+    'If-None-Match': metadata['@etag']
+  }, params)
+      .then(function (res) {
+        $rootScope.$broadcast('raven:document:saved', id, metadata, data, res);
+        return res;
+      });
+};
+
+RavenClient.prototype.deleteDocument = function (id, params) {
+  return this.http.del('/docs/' + id, params)
+      .then(function (res) {
+        $rootScope.$broadcast('raven:document:deleted', id, res);
+        return res;
+      });
+};
+
+RavenClient.prototype.deleteIndex = function (name, params) {
+  return this.http.del('/indexes/' + name, params)
+      .then(function (res) {
+        $rootScope.$broadcast('raven:index:deleted', name, res);
+        return res;
+      });
+};
+
+/**
+ * Gets a list of documents
+ * @param {object=} params Arguments to pass on the query string
+ * @param {number} [params.start] Index of first result to return
+ * @param {number} [params.pageSize] Maximum number of results to return
+ * @param {boolean} [params.metadata-only=false] Whether to return only metadata
+ * @param {string} [params.startsWith]
+ * @param {string} [params.exclude]
+ * */
+RavenClient.prototype.getDocuments = function (params) {
+  return this.http.get('/docs', params);
+};
+
+RavenClient.prototype.getAlerts = function (params) {
+  return this.http.get('/docs/Raven/Alerts', params);
+};
+
+/**
+ * Queries an index
+ * @param {string} indexName
+ * @param {(object|string)=} query
+ * @param {(string|string[])=} params.sort Example: LastModified
+ * @param {string=} params.operator Example: AND, OR
+ * @param {string=} params.resultsTransformer
+ * @param {string=} params.fetch Example: __all_fields
+ * @param {string=} params.debug Example: entries
+ * @param {string=} params.start
+ * @param {string=} params.pageSize
+ * */
+RavenClient.prototype.queryIndex = function (indexName, query, params) {
+  function buildQuery() {
+    if (angular.isString(query)) return query;
+
+    if (angular.isObject(query))
+      return _.reduce(query,
+          function (acc, val, key) {
+            return acc + ' ' + key + ':' + val
+          }, '').substr(1);
+  }
+
+  return this.http.get('/indexes/' + indexName, _.merge({ 'query': buildQuery() }, params));
+};
+
+/*
+ * metadata-only true/false
+ * */
+RavenClient.prototype.queries = function (params) {
+  return this.http.get('/queries', params);
+};
+
+/*
+ field
+ fromValue
+ pageSize
+ */
+RavenClient.prototype.getTerms = function (indexName, params) {
+  return this.http.get('/terms/' + indexName, params);
+};
+
+/*
+ parallel: yes / no
+ * */
+RavenClient.prototype.multiGet = function (requests, parallel, params) {
+  return this.http.post('/multi_get', requests, angular.extend({ parallel: parallel ? 'yes' : 'no' }, params));
+};
+
+RavenClient.prototype.debug = {
+  init: function (http) {
+    this.http = http;
+  }
+};
+
+RavenClient.prototype.debug.getUserInfo = function (params) {
+  return this.http.get('/debug/user-info', params);
+};
+
+RavenClient.prototype.debug.getMetrics = function (params) {
+  return this.http.get('/debug/metrics', params);
+};
+
+RavenClient.prototype.debug.getConfig = function (params) {
+  return this.http.get('/debug/config', params);
+};
+
+RavenClient.prototype.debug.getTasks = function (params) {
+  return this.http.get('/debug/tasks', params);
+};
+
+RavenClient.prototype.debug.getQueries = function (params) {
+  return this.http.get('/debug/queries');
+};
+
+RavenClient.prototype.debug.getChanges = function (params) {
+  return this.http.get('/debug/changes');
+};
+
+RavenClient.prototype.debug.getCurrentlyIndexing = function (params) {
+  return this.http.get('/debug/currently-indexing');
+};
+
+RavenClient.prototype.debug.getRoutes = function (params) {
+  return this.http.get('/debug/routes');
+};
+
+RavenClient.prototype.debug.getRequestTracing = function (params) {
+  return this.http.get('/debug/request-tracing');
+};
+
+RavenClient.prototype.debug.getSlowDocCounts = function (params) {
+  return this.http.get('/debug/sl0w-d0c-c0unts');
+};
+
+RavenClient.prototype.debug.getIdentities = function (params) {
+  return this.http.get('/debug/identities');
+};
+
+RavenClient.prototype.debug.getIndexingPerfStats = function (params) {
+  return this.http.get('/debug/indexing-perf-stats');
+};
+
+RavenClient.prototype.debug.suggestIndexMerge = function (params) {
+  return this.http.get('/debug/suggest-index-merge');
+};
+
+RavenClient.prototype.getLogs = function (params) {
+  return this.http.get('/logs', params);
+};
+
+RavenClient.prototype.getRunningTasks = function (params) {
+  return this.http.get('/operations');
+};
+
+/*
+ * definition yes / no
+ * */
+RavenClient.prototype.getIndex = function (indexName, params) {
+  return this.http.get('/indexes/' + indexName, params);
+};
+
+RavenClient.prototype.getTransformers = function (params) {
+  return this.http.get('/transformers', params);
+};
+
+RavenClient.prototype.getTransformer = function (transformerName, params) {
+  return this.http.get('/transformers/' + transformerName, params);
+};
+
+RavenClient.prototype.getBuildVersion = function (params) {
+  return this.http.get('/build/version', params);
+};
+
+RavenClient.prototype.getLicenseStatus = function (params) {
+  return this.http.get('/license/status', params);
+};
+
+/*
+ * data:
+ * {
+ "Settings": {
+ "Raven/DataDir": "~\\Databases\\firstDb",
+ "Raven/ActiveBundles": "PeriodicBackup"
+ },
+ "SecuredSettings": {},
+ "Disabled": false
+ }
+ * */
+RavenClient.prototype.createDatabase = function (databaseName, data, params) {
+  return this.http.put('/admin/databases/' + databaseName, data, {}, params);
+};
+
+// v3 only?
+RavenClient.prototype.getSingleAuthToken = function () {
+  return this.http.get('/singleAuthToken');
+};
+
+/**
+ * Gets the facets
+ * @param {string} indexName The name of the index to query
+ * @param {object[]} [params.facets] Example: [{"Name":"Tag"}]
+ * */
+RavenClient.prototype.getFacets = function (indexName, params) {
+  if (params && params.facets) {
+    params.facets = [params.facets];
+  }
+
+  return this.http.get('/facets/' + indexName, params);
+};
+
+RavenClient.prototype.getStats = function getStats(params) {
+  return this.http.get('/stats', params)
+};
 
 angular.module('ngRaven', [])
     .provider('raven', function () {
