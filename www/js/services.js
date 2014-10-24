@@ -1,4 +1,6 @@
 angular.module('corvus.services', [])
+    .value('MaxNumberOfFreeDocuments', 100)
+
     .factory('Auth', function ($window, Connections) {
       return {
         isAuthenticated: function () {

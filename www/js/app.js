@@ -245,13 +245,13 @@ angular.module('corvusApp',
           StatusBar.styleDefault();
         }
 
-        $timeout(function() {
+        $timeout(function () {
           window.navigator && window.navigator.splashscreen && window.navigator.splashscreen.hide();
         }, 1000);
       });
     })
 
-    .run(function checkPurchasesOnGetStats($rootScope, $q, Dialogs, Store, Toast) {
+    .run(function checkPurchasesOnGetStats($rootScope, $q, Dialogs, Store, Toast, MaxNumberOfFreeDocuments) {
       var originalGetStats = RavenClient.prototype.getStats;
 
       function doPurchase() {
@@ -273,34 +273,37 @@ angular.module('corvusApp',
       function checkPurchases(getStatsRes) {
         var documentCount = getStatsRes.data.CountOfDocuments;
 
-        if (documentCount > 100) {
-          LE.log('Dealing with more than free allowed doc limit:', documentCount);
-
-          return Store.hasUnlimitedDocuments().then(function (purchase) {
-            LE.log('Unlimited number of documents purchase', purchase);
-
-            if (!purchase) {
-              return Dialogs.confirm('Your database contains more documents than you can access for free.\n\n' +
-              'Do you want to support the development by purchasing a license?', 'Purchase required')
-                  .then(function (buttonIndex) {
-                    switch (buttonIndex) {
-                      case 1:
-                        return doPurchase();
-                      case 2:
-                        return $q.reject();
-                    }
-                  }, function () {
-                    return $q.reject();
-                  });
-            }
-          }, function (err) {
-            LE.warn('Cannot check purchase', err);
-
-            Toast.showLongCenter(
-                'Too many documents but we can\'t check your purchases now');
-            return $q.reject(err);
-          });
+        if (documentCount <= MaxNumberOfFreeDocuments) {
+          return getStatsRes;
         }
+
+        LE.log('Dealing with more than free allowed doc limit:', documentCount);
+
+        return Store.hasUnlimitedDocuments().then(function (purchase) {
+          LE.log('Unlimited number of documents purchase', purchase);
+
+          if (!purchase) {
+            return Dialogs.confirm('Your database contains more documents than you can access for free.\n\n' +
+            'Do you want to support the development by purchasing a license?', 'Purchase required')
+                .then(function (buttonIndex) {
+                  switch (buttonIndex) {
+                    case 1:
+                      return doPurchase().then(function () {
+                        return getStatsRes;
+                      });
+                    default :
+                      return $q.reject();
+                  }
+                }, function () {
+                  return $q.reject();
+                });
+          }
+        }, function (err) {
+          LE.warn('Cannot check purchase', err);
+
+          Toast.showLongCenter('Too many documents but we can\'t check your purchases now');
+          return $q.reject(err);
+        });
       }
 
       RavenClient.prototype.getStats = function () {
