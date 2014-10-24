@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.16" android-versionCode="39">
+<widget xmlns:gap="http://phonegap.com/ns/1.0" xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.simoneb.corvus" version="0.0.16" android-versionCode="39">
 
     <name>Corvus</name>
 
@@ -15,18 +16,12 @@
     <access origin="*"/>
 
     <gap:platform name="android"/>
-    <gap:platform name="winphone"/>
+    <!--<gap:platform name="winphone"/>-->
 
     <preference name="phonegap-version" value="3.6.3"/>
 
-    <platform name="android">
-        <icon src="www/img/launcher-mdpi.png" density="ldpi"/>
-        <icon src="www/img/launcher-mdpi.png" density="mdpi"/>
-        <icon src="www/img/launcher-hdpi.png" density="hdpi"/>
-        <icon src="www/img/launcher-xhdpi.png" density="xhdpi"/>
-        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi"/>
-        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi"/>
-    </platform>
+    <!-- this should go before any other icon-related settings to set the default launcher icon -->
+    <icon src="www/img/launcher-mdpi.png" />
 
     <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="ldpi"/>
     <icon src="img/launcher-mdpi.png" gap:platform="android" gap:qualifier="mdpi"/>
@@ -38,8 +33,27 @@
     <icon src="img/launcher-mdpi.png" gap:platform="winphone"/>
     <icon src="img/launcher-xhdpi.png" gap:platform="winphone" gap:role="background"/>
 
-    <!--<preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="5000" />-->
+    <platform name="android">
+        <icon src="www/img/launcher-mdpi.png" density="ldpi"/>
+        <icon src="www/img/launcher-mdpi.png" density="mdpi"/>
+        <icon src="www/img/launcher-hdpi.png" density="hdpi"/>
+        <icon src="www/img/launcher-xhdpi.png" density="xhdpi"/>
+        <icon src="www/img/launcher-xxhdpi.png" density="xxhdpi"/>
+        <icon src="www/img/launcher-xxxhdpi.png" density="xxxhdpi"/>
+
+        <splash src="res/screen/android/res-long-land-ldpi/default.png" density="land-ldpi"/>
+        <splash src="res/screen/android/res-long-land-mdpi/default.png" density="land-mdpi"/>
+        <splash src="res/screen/android/res-long-land-hdpi/default.png" density="land-hdpi"/>
+        <splash src="res/screen/android/res-long-land-xhdpi/default.png" density="land-xhdpi"/>
+
+        <splash src="res/screen/android/res-long-port-ldpi/default.png" density="port-ldpi"/>
+        <splash src="res/screen/android/res-long-port-mdpi/default.png" density="port-mdpi"/>
+        <splash src="res/screen/android/res-long-port-hdpi/default.png" density="port-hdpi"/>
+        <splash src="res/screen/android/res-long-port-xhdpi/default.png" density="port-xhdpi"/>
+    </platform>
+
+    <preference name="SplashScreen" value="screen"/>
+    <preference name="SplashScreenDelay" value="10000" />
     <!--<preference name="auto-hide-splash-screen" value="false" />-->
 
     <gap:plugin name="com.ionic.keyboard"/>
@@ -48,7 +62,8 @@
     <gap:plugin name="org.apache.cordova.console"/>
     <gap:plugin name="org.apache.cordova.dialogs"/>
     <gap:plugin name="com.mcm.plugins.androidinappbilling">
-        <param name="BILLING_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlWtqn9TWvawMDRrykB0OipCwYnArAkinOPq7kb7B7qxokqTmS1maKlxzeAPxwvzYP49u9GNeNJfsqup2E4dR0hiigHQuqmJROUNEOtTxJaIhNLKQaOlC7Bdbvi1n00a5xbb7+kNlIPlo0rtuE2vrj6L3mGV7zKGmsCMU2mPRcE96jMc/kkWsUQnx373MJsgoXq0plUdrkMLhByS4ufKMS1lAebvRPsdkO1dCE3v6ktDyfcdjijMcgTVCqIHtUh6fbidmUClxkNOTsJms+muZyClFGQwvYfZ1+rb00FCcdN6IohJw5crzC3VXL6zlJQhB5SUsv+DuRi9msp0nLFGANwIDAQAB"/>
+        <param name="BILLING_KEY"
+               value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlWtqn9TWvawMDRrykB0OipCwYnArAkinOPq7kb7B7qxokqTmS1maKlxzeAPxwvzYP49u9GNeNJfsqup2E4dR0hiigHQuqmJROUNEOtTxJaIhNLKQaOlC7Bdbvi1n00a5xbb7+kNlIPlo0rtuE2vrj6L3mGV7zKGmsCMU2mPRcE96jMc/kkWsUQnx373MJsgoXq0plUdrkMLhByS4ufKMS1lAebvRPsdkO1dCE3v6ktDyfcdjijMcgTVCqIHtUh6fbidmUClxkNOTsJms+muZyClFGQwvYfZ1+rb00FCcdN6IohJw5crzC3VXL6zlJQhB5SUsv+DuRi9msp0nLFGANwIDAQAB"/>
     </gap:plugin>
     <gap:plugin name="nl.x-services.plugins.actionsheet"/>
     <gap:plugin name="org.apache.cordova.inappbrowser"/>

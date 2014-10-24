@@ -13,7 +13,9 @@ gulp.task('default', ['install']);
 gulp.task('install', ['git-check'], function () {
   exec('git submodule init && git submodule update');
 
-  ['com.ionic.keyboard',
+  [
+    'com.ionic.keyboard',
+    'org.apache.cordova.splashscreen',
     'org.apache.cordova.console',
     'org.apache.cordova.dialogs',
     'https://github.com/Paldom/SpinnerDialog.git',

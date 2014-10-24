@@ -236,7 +236,7 @@ angular.module('corvusApp',
       $urlRouterProvider.otherwise('/connections/list');
     })
 
-    .run(function ($ionicPlatform) {
+    .run(function ($ionicPlatform, $timeout) {
       $ionicPlatform.ready(function () {
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
           cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -244,6 +244,10 @@ angular.module('corvusApp',
         if (window.StatusBar) {
           StatusBar.styleDefault();
         }
+
+        $timeout(function() {
+          window.navigator && window.navigator.splashscreen && window.navigator.splashscreen.hide();
+        }, 1000);
       });
     })
 
