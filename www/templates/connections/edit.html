@@ -45,16 +45,17 @@
                 </ion-item>
             </ion-list>
         </form>
+        <div class="padding">
+            <button class="button button-stable button-block"
+               ng-disabled="formHolder.form.url.$invalid"
+               ng-click="test()">
+                Test Connection
+            </button>
+            <button class="button button-positive button-block icon-left"
+               ng-disabled="formHolder.form.$invalid" ng-click="save()">
+                <i class="icon ion-checkmark-round"></i>
+                &nbsp;{{buttonPrefix}} Connection
+            </button>
+        </div>
     </ion-content>
-    <ion-footer-bar>
-        <a class="button button-stable"
-           ng-disabled="formHolder.form.url.$invalid"
-           ng-click="test()">
-            Test Connection
-        </a>
-        <a class="button button-positive icon-left ion-android-checkmark"
-           ng-disabled="formHolder.form.$invalid" ng-click="save()">
-            &nbsp;{{buttonPrefix}} Connection
-        </a>
-    </ion-footer-bar>
 </ion-view>
