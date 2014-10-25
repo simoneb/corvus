@@ -39,7 +39,7 @@ gulp.task('install', ['git-check'], function () {
   exec('cordova platform add android');
 });
 
-gulp.task('bump', ['bump-package.json', 'bump-config.xml'], function () {
+gulp.task('bump', ['bump-package.json', 'bump-config.xml', 'bump-config.json'], function () {
   return gulp.src('package.json')
       .pipe(jeditor(function (json) {
         console.log(gutil.colors.green('New version: ' + json.version));
@@ -59,6 +59,15 @@ gulp.task('bump-package.json', function () {
         return json;
       }))
       .pipe(gulp.dest('.'));
+});
+
+gulp.task('bump-config.json', function () {
+  return gulp.src('www/config.json')
+      .pipe(jeditor(function (json) {
+        json.version = increaseRevision(json.version);
+        return json;
+      }))
+      .pipe(gulp.dest('www'));
 });
 
 gulp.task('bump-config.xml', ['bump-package.json'], function () {
@@ -87,7 +96,24 @@ gulp.task('git-check', function (done) {
   done();
 });
 
-gulp.task('release', function () {
+function markConfigJsonRelease(release) {
+  return gulp.src('www/config.json')
+      .pipe(jeditor(function (json) {
+        json.debug = !release;
+        return json;
+      }))
+      .pipe(gulp.dest('www'));
+}
+
+gulp.task('mark-release', function () {
+  return markConfigJsonRelease(true);
+});
+
+gulp.task('mark-debug', function () {
+  return markConfigJsonRelease(false);
+});
+
+gulp.task('do-release', function () {
   var jarSigner = path.join(process.env.JAVA_HOME, 'bin', 'jarsigner.exe'),
       zipAlign = process.env['PROGRAMFILES(x86)'] + '/Android/android-sdk/build-tools/20.0.0/zipalign.exe',
       keystore = path.join(process.env.userprofile, 'android-release-key.keystore');
@@ -109,5 +135,9 @@ gulp.task('release', function () {
   exec(fmt('"%s" -v 4 corvus-release-unsigned.apk corvus-release.apk', zipAlign));
 
   popd();
+});
+
+gulp.task('release', ['mark-release', 'do-release', 'mark-debug'], function () {
+
 });
 

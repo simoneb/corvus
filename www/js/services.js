@@ -1,17 +1,6 @@
 angular.module('corvus.services', [])
     .value('MaxNumberOfFreeDocuments', 2000)
 
-    .factory('Auth', function ($window, Connections) {
-      return {
-        isAuthenticated: function () {
-          return false;
-        },
-        hasConnections: function () {
-          return Connections.any();
-        }
-      }
-    })
-
     .service('Connections', function ($window) {
       var self = this,
           store = $window.localStorage;
