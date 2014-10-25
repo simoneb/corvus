@@ -5,13 +5,32 @@ LE.init({
 });
 
 window.ionic.Platform.ready(function () {
-  angular.bootstrap(document, ['corvusApp']);
+  angular.bootstrap().invoke(function ($http) {
+    $http.get('config.json').success(function (config) {
+      angular.module('config', [])
+          .constant('CONFIG', config);
+
+      angular.bootstrap(document, ['corvusApp']);
+    });
+  });
 });
 
 angular.module('corvusApp',
-    ['ionic', 'corvus.controllers', 'corvus.filters', 'corvus.services', 'corvus.directives', 'ngRaven', 'ngCordova'])
+    ['ionic',
+      'corvus.controllers',
+      'corvus.filters',
+      'corvus.services',
+      'corvus.directives',
+      'ngRaven',
+      'ngCordova',
+      'config'])
 
-    .config(function ($stateProvider, $urlRouterProvider, ravenProvider) {
+    .config(function ($stateProvider, $urlRouterProvider, $compileProvider, ravenProvider, CONFIG) {
+      // angular 1.3 only
+      //$compileProvider.debugInfoEnabled(CONFIG.debug);
+
+      LE.info('Running version', CONFIG.version, 'in', CONFIG.debug ? 'debug' : 'release', 'mode');
+
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
           if ((res.config.ignoreErrors || []).indexOf(res.status) !== -1) {
