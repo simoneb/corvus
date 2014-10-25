@@ -109,11 +109,11 @@ gulp.task('mark-release', function () {
   return markConfigJsonRelease(true);
 });
 
-gulp.task('mark-debug', function () {
+gulp.task('mark-debug', ['do-release'], function () {
   return markConfigJsonRelease(false);
 });
 
-gulp.task('do-release', function () {
+gulp.task('do-release', ['mark-release'], function () {
   var jarSigner = path.join(process.env.JAVA_HOME, 'bin', 'jarsigner.exe'),
       zipAlign = process.env['PROGRAMFILES(x86)'] + '/Android/android-sdk/build-tools/20.0.0/zipalign.exe',
       keystore = path.join(process.env.userprofile, 'android-release-key.keystore');
