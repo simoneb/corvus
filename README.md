@@ -25,4 +25,4 @@ cross-platform mobile development platform [cordova](http://cordova.apache.org).
 - `ionic run` for emulator (not recommended) or phone
 
 
-> Corvus is not affiliated with RavenDB or its creators.
+**Corvus is not affiliated with RavenDB or its creators.**
