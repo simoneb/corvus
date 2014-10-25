@@ -1,4 +1,5 @@
 {
   "debug": true,
-  "version": "0.0.18"
+  "version": "0.0.18",
+  "maxNumberOfFreeDocuments": 2000
 }

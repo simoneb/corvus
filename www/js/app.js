@@ -29,7 +29,7 @@ angular.module('corvusApp',
       // angular 1.3 only
       //$compileProvider.debugInfoEnabled(CONFIG.debug);
 
-      LE.info('Running version', CONFIG.version, 'in', CONFIG.debug ? 'debug' : 'release', 'mode');
+      LE.info('Startup configuration', CONFIG);
 
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
@@ -270,7 +270,7 @@ angular.module('corvusApp',
       });
     })
 
-    .run(function checkPurchasesOnGetStats($rootScope, $q, $location, Dialogs, Store, Toast, MaxNumberOfFreeDocuments) {
+    .run(function checkPurchasesOnGetStats($rootScope, $q, $location, Dialogs, Store, Toast, CONFIG) {
       var originalGetStats = RavenClient.prototype.getStats;
 
       function rejectAndGoHome(err) {
@@ -297,7 +297,7 @@ angular.module('corvusApp',
       function checkPurchases(getStatsRes) {
         var documentCount = getStatsRes.data.CountOfDocuments;
 
-        if (documentCount <= MaxNumberOfFreeDocuments) {
+        if (documentCount <= CONFIG.maxNumberOfFreeDocuments) {
           return getStatsRes;
         }
 
