@@ -1,7 +1,7 @@
 function HttpClient($http, $q, $injector, options) {
   var authData;
 
-  function http(method, path, config) {
+  this.http = function (method, path, config) {
     function callImmediate() {
       var headers = {
         'Has-Api-Key': !!options.apiKey,
@@ -176,9 +176,9 @@ function HttpClient($http, $q, $injector, options) {
             return callImmediate().catch(handleError);
           }, handleError);
     });
-  }
+  };
 
-  function createConfig(params) {
+  this.createConfig = function (params) {
     var config = {};
 
     if (!params) return config;
@@ -188,27 +188,29 @@ function HttpClient($http, $q, $injector, options) {
     config.params = params;
 
     return config;
-  }
-
-  this.get = function (path, params) {
-    return http('GET', path, createConfig(params));
-  };
-
-  this.post = function (path, data, params) {
-    return http('POST', path, angular.extend({ data: data }, createConfig(params)));
-  };
-
-  this.put = function (path, data, headers, params) {
-    return http('PUT', path, angular.extend({ data: data, headers: headers }, createConfig(params)));
-  };
-
-  this.del = function (path, params) {
-    return http('DELETE', path, createConfig(params));
   };
 }
 
+HttpClient.prototype.get = function (path, params) {
+  return this.http('GET', path, this.createConfig(params));
+};
+
+HttpClient.prototype.post = function (path, data, params) {
+  return this.http('POST', path, angular.extend({ data: data }, this.createConfig(params)));
+};
+
+HttpClient.prototype.put = function (path, data, headers, params) {
+  return this.http('PUT', path, angular.extend({ data: data, headers: headers }, this.createConfig(params)));
+};
+
+HttpClient.prototype.del = function (path, params) {
+  return this.http('DELETE', path, this.createConfig(params));
+};
+
 function RavenClient($injector, $rootScope, options) {
   options = angular.copy(options);
+
+  this.$rootScope = $rootScope;
 
   if (options.database) {
     options.url = options.url + '/databases/' + options.database;
@@ -267,7 +269,7 @@ RavenClient.prototype.saveDocument = function (id, metadata, data, params) {
     'If-None-Match': metadata['@etag']
   }, params)
       .then(function (res) {
-        $rootScope.$broadcast('raven:document:saved', id, metadata, data, res);
+        this.$rootScope.$broadcast('raven:document:saved', id, metadata, data, res);
         return res;
       });
 };
@@ -275,7 +277,7 @@ RavenClient.prototype.saveDocument = function (id, metadata, data, params) {
 RavenClient.prototype.deleteDocument = function (id, params) {
   return this.http.del('/docs/' + id, params)
       .then(function (res) {
-        $rootScope.$broadcast('raven:document:deleted', id, res);
+        this.$rootScope.$broadcast('raven:document:deleted', id, res);
         return res;
       });
 };
@@ -283,7 +285,7 @@ RavenClient.prototype.deleteDocument = function (id, params) {
 RavenClient.prototype.deleteIndex = function (name, params) {
   return this.http.del('/indexes/' + name, params)
       .then(function (res) {
-        $rootScope.$broadcast('raven:index:deleted', name, res);
+        this.$rootScope.$broadcast('raven:index:deleted', name, res);
         return res;
       });
 };
