@@ -11,7 +11,7 @@
           ui-sref="app.documents.document({ id: document['@metadata']['@id'] })">
         <p>{{document['@metadata']['@id']}}</p>
 
-        <h3>{{ document | omitMetadata }}</h3>
+        <h3>{{ document | omitMetadata | json | limitTo:200 }}</h3>
       </ion-item>
     </ion-list>
     <div ng-if="layout.mode.indexOf('Cards') !== -1">
