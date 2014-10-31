@@ -27,6 +27,7 @@ Created by the [Ionic Framework](http://ionicframework.com/) team and the commun
 - [App Prefences](https://github.com/dferrell/plugins-application-preferences)
 - [Background Geolocation](https://github.com/christocracy/cordova-plugin-background-geolocation)
 - [Barcode Scanner](https://github.com/wildabeast/BarcodeScanner)
+- [Badge](https://github.com/katzer/cordova-plugin-badge)
 - [Battery Status](https://github.com/apache/cordova-plugin-battery-status) *
 - [Bluetooth Serial](https://github.com/don/BluetoothSerial)
 - [Camera](https://github.com/apache/cordova-plugin-camera) *
@@ -46,10 +47,12 @@ Created by the [Ionic Framework](http://ionicframework.com/) team and the commun
 - [Google Analytics](https://github.com/phonegap-build/GAPlugin)
 - [Keyboard](https://github.com/driftyco/ionic-plugins-keyboard)
 - [Keychain](https://github.com/shazron/KeychainPlugin)
+- [Local Notifications](https://github.com/katzer/cordova-plugin-local-notifications/)
 - [Media Capture](https://github.com/apache/cordova-plugin-media-capture)
 - [Media](https://github.com/apache/cordova-plugin-media) *
 - [Native Audio](https://github.com/SidneyS/cordova-plugin-nativeaudio)
 - [Network Information](https://github.com/apache/cordova-plugin-network-information) *
+- [Oauth](https://github.com/nraboy/ng-cordova-oauth)
 - [Pin Dialog](https://github.com/Paldom/PinDialog)
 - [Printer](https://github.com/katzer/cordova-plugin-printer)
 - [Progress Indicator](https://github.com/pbernasconi/cordova-progressIndicator)
@@ -61,6 +64,7 @@ Created by the [Ionic Framework](http://ionicframework.com/) team and the commun
 - [SQLite](https://github.com/brodysoft/Cordova-SQLitePlugin)
 - [StatusBar](https://github.com/apache/cordova-plugin-statusbar) *
 - [Toast](https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin)
+- [Touchid](https://github.com/leecrossley/cordova-plugin-touchid)
 - [Vibration](https://github.com/apache/cordova-plugin-vibration) *
 - [Zip](https://github.com/MobileChromeApps/zip)
 

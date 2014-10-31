@@ -43,7 +43,7 @@ gulp.task('bump', ['bump-package.json', 'bump-config.xml', 'bump-config.json'], 
   return gulp.src('package.json')
       .pipe(jeditor(function (json) {
         console.log(gutil.colors.green('New version: ' + json.version));
-        exec(fmt('git add package.json www/config.xml && git commit -m "Bump version to %s"', json.version));
+        exec(fmt('git add package.json www/config.xml www/config.json && git commit -m "Bump version to %s"', json.version));
         return json;
       }));
 });

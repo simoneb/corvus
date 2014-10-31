@@ -38,11 +38,11 @@
     "angular-mocks": "~1.2.23",
     "jquery": "~2.1.1"
   },
-  "_release": "8153293b64",
+  "_release": "f225f597b6",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "8153293b64d04291c68456d90d42466ea55c48d5"
+    "commit": "f225f597b6f4f2dd69ac90c5751d80423fac0270"
   },
   "_source": "https://github.com/driftyco/ng-cordova.git",
   "_target": "master",
