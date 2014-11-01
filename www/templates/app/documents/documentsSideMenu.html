@@ -1,19 +1,5 @@
-<ion-item class="item-icon-right"
-          ui-sref="app.indexes.list"
-          ui-sref-active="active"
-          menu-close>
-    Indexing
-    <i class="icon ion-ios7-arrow-forward stable"></i>
-</ion-item>
-<ion-item class="item-icon-right"
-          ui-sref="app.statuses"
-          ui-sref-active="active"
-          menu-close>
-    Status
-    <i class="icon ion-ios7-arrow-forward stable"></i>
-</ion-item>
-<ion-item class="item-divider energized-border positive">
-    Documents
+<ion-item class="positive">
+    <b>Documents</b>
 </ion-item>
 <ion-item class="item-icon-right"
           ui-sref-active="active"
@@ -36,5 +22,26 @@
           menu-close>
     &nbsp;{{entity.name }}
     <span ng-show="entity.totalResults">({{entity.totalResults}})</span>
+    <i class="icon ion-ios7-arrow-forward stable"></i>
+</ion-item>
+<ion-item class="item-icon-right"
+          ui-sref="app.indexes.list"
+          ui-sref-active="active"
+          menu-close>
+    <b>Indexing</b>
+    <i class="icon ion-ios7-arrow-forward stable"></i>
+</ion-item>
+<ion-item class="item-icon-right"
+          ui-sref="app.tasks.list"
+          ui-sref-active="active"
+          menu-close>
+    <b>Tasks</b>
+    <i class="icon ion-ios7-arrow-forward stable"></i>
+</ion-item>
+<ion-item class="item-icon-right"
+          ui-sref="app.status.list"
+          ui-sref-active="active"
+          menu-close>
+    <b>Status</b>
     <i class="icon ion-ios7-arrow-forward stable"></i>
 </ion-item>

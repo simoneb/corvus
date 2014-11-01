@@ -6,12 +6,16 @@ LE.init({
 
 window.ionic.Platform.ready(function () {
   angular.bootstrap().invoke(function ($http) {
-    $http.get('config.json').success(function (config) {
-      angular.module('config', [])
-          .constant('CONFIG', config);
+    $http.get('config.json')
+        .success(function (config) {
+          LE.info('Successfully read configuration at startup', config);
 
-      angular.bootstrap(document, ['corvusApp']);
-    });
+          angular.module('corvus.config', []).constant('CONFIG', config);
+          angular.bootstrap(document, ['corvusApp']);
+        })
+        .error(function (data, status) {
+          LE.error('Failed to read configuration at startup', data, status);
+        });
   });
 });
 
@@ -23,13 +27,11 @@ angular.module('corvusApp',
       'corvus.directives',
       'ngRaven',
       'ngCordova',
-      'config'])
+      'corvus.config'])
 
     .config(function ($stateProvider, $urlRouterProvider, $compileProvider, ravenProvider, CONFIG) {
       // angular 1.3 only
       //$compileProvider.debugInfoEnabled(CONFIG.debug);
-
-      LE.info('Startup configuration', CONFIG);
 
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
@@ -217,39 +219,48 @@ angular.module('corvusApp',
             controller: 'IndexQueryCtrl'
           })
 
-          .state('app.statuses', {
-            url: '/statuses',
-            views: {
-              menuContent: {
-                templateUrl: 'templates/app/documents/documentsSideMenu.html',
-                controller: 'DocumentsSideMenuCtrl'
-              },
-              mainContent: {
-                templateUrl: 'templates/app/statuses.html'
-              }
-            }
-          })
           .state('app.status', {
             abstract: true,
             url: '/status',
             views: {
               menuContent: {
-                templateUrl: 'templates/app/statusesSideMenu.html'
+                templateUrl: 'templates/app/defaultSideMenu.html'
               },
               mainContent: {
                 template: '<ion-nav-view></ion-nav-view>'
               }
             }
           })
+          .state('app.status.list', {
+            url: '/list',
+            templateUrl: 'templates/app/status/statuses.html'
+          })
           .state('app.status.stats', {
             url: '/stats',
-            templateUrl: 'templates/app/stats.html',
+            templateUrl: 'templates/app/status/stats.html',
             controller: 'StatsCtrl'
           })
           .state('app.status.userInfo', {
             url: '/userInfo',
-            templateUrl: 'templates/app/userInfo.html',
+            templateUrl: 'templates/app/status/userInfo.html',
             controller: 'UserInfoCtrl'
+          })
+
+          .state('app.tasks', {
+            abstract: true,
+            url: '/tasks',
+            views: {
+              menuContent: {
+                templateUrl: 'templates/app/defaultSideMenu.html'
+              },
+              mainContent: {
+                template: '<ion-nav-view></ion-nav-view>'
+              }
+            }
+          })
+          .state('app.tasks.list', {
+            url: '/list',
+            templateUrl: 'templates/app/tasks/list.html'
           });
 
       $urlRouterProvider.otherwise('/connections/list');
