@@ -1,19 +1,23 @@
-LE.init({
-  token: '6f2f77f7-19ed-489d-a3bb-a6c5f4be4a99',
-  print: true,
-  catchall: true
-});
+var logentriesTokens = {
+  failedStartup: '676a8fb9-9fd4-42cd-bc93-dd6b5cb24aa7',
+  dev: '3c5c6481-b4cf-40c3-b2b9-3aca78ca9924',
+  production: '6f2f77f7-19ed-489d-a3bb-a6c5f4be4a99'
+};
 
 window.ionic.Platform.ready(function () {
   angular.bootstrap().invoke(function ($http) {
     $http.get('config.json')
         .success(function (config) {
-          LE.info('Successfully read configuration at startup', config);
-
           angular.module('corvus.config', []).constant('CONFIG', config);
           angular.bootstrap(document, ['corvusApp']);
         })
         .error(function (data, status) {
+          LE.init({
+            token: logentriesTokens.failedStartup,
+            print: true,
+            catchall: true
+          });
+
           LE.error('Failed to read configuration at startup', data, status);
         });
   });
@@ -32,6 +36,22 @@ angular.module('corvusApp',
     .config(function ($stateProvider, $urlRouterProvider, $compileProvider, ravenProvider, CONFIG) {
       // angular 1.3 only
       //$compileProvider.debugInfoEnabled(CONFIG.debug);
+
+      if (CONFIG.debug) {
+        LE.init({
+          token: logentriesTokens.dev,
+          print: true,
+          catchall: true
+        });
+      } else {
+        LE.init({
+          token: logentriesTokens.production,
+          print: false,
+          catchall: true
+        });
+      }
+
+      LE.info('Startup with config', CONFIG);
 
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
