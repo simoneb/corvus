@@ -1,6 +1,6 @@
 {
   "name": "corvus",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "private": true,
   "description": "A RavenDB client for mobile devices",
   "repository": {
