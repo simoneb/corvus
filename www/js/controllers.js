@@ -303,9 +303,7 @@ angular.module('corvus.controllers', [])
         return ActionSheet.show({
           title: 'Choose action',
           buttonLabels: allowedActions,
-          addCancelButtonWithLabel: actions.cancel,
-          addDestructiveButtonWithLabel: actions.remove,
-          androidEnableCancelButton: true
+          addDestructiveButtonWithLabel: actions.remove
         }).then(function (buttonLabel) {
           switch (buttonLabel) {
             case actions.remove:

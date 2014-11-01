@@ -206,9 +206,11 @@ angular.module('corvus.services', [])
         return {
           show: function (options) {
             var deferred = $q.defer(),
-                allLabels = [options.addDestructiveButtonWithLabel]
+                allLabels = (options.addDestructiveButtonWithLabel ?
+                    [options.addDestructiveButtonWithLabel] : [])
                     .concat(options.buttonLabels)
-                    .concat([options.addCancelButtonWithLabel]);
+                    .concat(options.addCancelButtonWithLabel ?
+                        [options.addCancelButtonWithLabel] : []);
 
             $window.plugins.actionsheet.show(options, function (buttonIndex) {
               deferred.resolve(allLabels[buttonIndex - 1]);
