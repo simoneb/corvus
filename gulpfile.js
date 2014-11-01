@@ -122,6 +122,7 @@ gulp.task('do-release', ['mark-release'], function () {
     throw new Error('keystore not found');
   }
 
+  mkdir('platforms/android/ant-build');
   pushd('platforms/android/ant-build');
 
   rm('corvus-release.apk');
