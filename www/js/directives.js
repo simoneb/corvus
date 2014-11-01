@@ -39,7 +39,7 @@ angular.module('corvus.directives', [])
       return {
         link: function (scope, elm, attrs) {
           var client = scope.$eval(attrs['ifV3']);
-          if (!client) return;
+          if (!client || !client instanceof RavenClient) return;
 
           if (!client.isV3())
             angular.element(elm).remove();

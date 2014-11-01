@@ -1,0 +1,21 @@
+<ion-view title="Toggle indexing">
+    <ion-content>
+        <ion-list>
+            <ion-item>
+                Current status
+                <span class="item-note">{{status.description}}</span>
+            </ion-item>
+            <li class="item item-toggle">
+                Change status
+                <label class="toggle">
+                    <input type="checkbox" ng-model="status.enabled" ng-change="toggle()">
+
+                    <div class="track">
+                        <div class="handle"></div>
+                    </div>
+                </label>
+            </li>
+
+        </ion-list>
+    </ion-content>
+</ion-view>

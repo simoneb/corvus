@@ -33,7 +33,7 @@ angular.module('corvusApp',
       'ngCordova',
       'corvus.config'])
 
-    .config(function ($stateProvider, $urlRouterProvider, $compileProvider, ravenProvider, CONFIG) {
+    .config(function initializeLogging(CONFIG) {
       // angular 1.3 only
       //$compileProvider.debugInfoEnabled(CONFIG.debug);
 
@@ -52,7 +52,9 @@ angular.module('corvusApp',
       }
 
       LE.info('Startup with config', CONFIG);
+    })
 
+    .config(function configureRouting($stateProvider, $urlRouterProvider, ravenProvider) {
       ravenProvider.defaults.responseErrorHandlers.push(function ($q, Toast) {
         return function (res) {
           if ((res.config.ignoreErrors || []).indexOf(res.status) !== -1) {
@@ -280,7 +282,18 @@ angular.module('corvusApp',
           })
           .state('app.tasks.list', {
             url: '/list',
-            templateUrl: 'templates/app/tasks/list.html'
+            templateUrl: 'templates/app/tasks/list.html',
+            controller: 'TasksCtrl'
+          })
+          .state('app.tasks.exportDatabase', {
+            url: '/exportDatabase',
+            templateUrl: 'templates/app/tasks/exportDatabase.html',
+            controller: 'ExportDatabaseCtrl'
+          })
+          .state('app.tasks.toggleIndexing', {
+            url: '/toggleIndexing',
+            templateUrl: 'templates/app/tasks/toggleIndexing.html',
+            controller: 'ToggleIndexingCtrl'
           });
 
       $urlRouterProvider.otherwise('/connections/list');

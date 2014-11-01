@@ -662,4 +662,60 @@ angular.module('corvus.controllers', [])
       ravenClient.debug.getUserInfo().then(function (res) {
         $scope.userInfo = res.data;
       });
+    })
+
+    .controller('TasksCtrl', function ($scope, ravenClient) {
+      $scope.client = ravenClient;
+    })
+    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient) {
+      // TODO: unfortunately downloading a file with object url does not work
+      $scope.options = {
+        includeDocuments: true,
+        includeIndexes: true,
+        batchSize: 1024
+      };
+
+      $scope.export = function () {
+        var types = 0,
+            opt = $scope.options;
+        if (opt.includeDocuments) types += 1;
+        if (opt.includeIndexes) types += 2;
+        if (opt.includeAttachments) types += 4;
+        if (opt.includeTransformers) types += 8;
+        if (opt.removeAnalyzers) types += 8000;
+
+        ravenClient.studioTasks.exportDatabase({
+          OperateOnTypes: types,
+          BatchSize: opt.batchSize,
+          ShouldExcludeExpired: !opt.excludeExpiredDocuments,
+          Filters: [],
+          TransformScript: ''
+        }).then(function (res) {
+          window.open(window.URL.createObjectURL(res.data), '_system');
+        });
+      };
+    })
+    .controller('ToggleIndexingCtrl', function ($scope, ravenClient) {
+      $scope.status = {
+        description: 'unknown',
+        enabled: false
+      };
+
+      function setCurrentStatus() {
+        ravenClient.admin.getIndexingStatus().then(function (res) {
+          $scope.status.description = res.data.IndexingStatus;
+          $scope.status.enabled = $scope.status.description === 'Indexing';
+        });
+      }
+
+      $scope.toggle = function () {
+        if ($scope.status.enabled) {
+          ravenClient.admin.startIndexing().then(setCurrentStatus);
+        } else {
+          ravenClient.admin.stopIndexing().then(setCurrentStatus);
+        }
+      };
+
+      setCurrentStatus();
+
     });

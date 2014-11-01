@@ -208,22 +208,24 @@ HttpClient.prototype.del = function (path, params) {
 };
 
 function RavenClient($injector, $rootScope, options) {
-  options = angular.copy(options);
+  this.options = angular.copy(options);
 
   this.$rootScope = $rootScope;
 
-  if (options.database) {
-    options.url = options.url + '/databases/' + options.database;
-    delete options.database;
+  if (this.options.database) {
+    this.options.url = this.options.url + '/databases/' + this.options.database;
+    delete this.options.database;
   }
 
-  this.http = $injector.instantiate(HttpClient, { options: options });
+  this.http = $injector.instantiate(HttpClient, { options: this.options });
 
   this.isV3 = function () {
-    return /^3/.test(options.serverVersion);
+    return /^3/.test(this.options.serverVersion);
   };
 
-  this.debug.init(this.http);
+  this.debug.init(this);
+  this.admin.init(this);
+  this.studioTasks.init(this);
 }
 
 /**
@@ -357,8 +359,8 @@ RavenClient.prototype.multiGet = function (requests, parallel, params) {
 };
 
 RavenClient.prototype.debug = {
-  init: function (http) {
-    this.http = http;
+  init: function (parent) {
+    this.http = parent.http;
   }
 };
 
@@ -445,21 +447,6 @@ RavenClient.prototype.getLicenseStatus = function (params) {
   return this.http.get('/license/status', params);
 };
 
-/*
- * data:
- * {
- "Settings": {
- "Raven/DataDir": "~\\Databases\\firstDb",
- "Raven/ActiveBundles": "PeriodicBackup"
- },
- "SecuredSettings": {},
- "Disabled": false
- }
- * */
-RavenClient.prototype.createDatabase = function (databaseName, data, params) {
-  return this.http.put('/admin/databases/' + databaseName, data, {}, params);
-};
-
 // v3 only?
 RavenClient.prototype.getSingleAuthToken = function () {
   return this.http.get('/singleAuthToken');
@@ -480,6 +467,55 @@ RavenClient.prototype.getFacets = function (indexName, params) {
 
 RavenClient.prototype.getStats = function getStats(params) {
   return this.http.get('/stats', params)
+};
+
+RavenClient.prototype.admin = {
+  init: function (parent) {
+    this.parent = parent;
+  }
+};
+
+/*
+ * data:
+ * {
+ "Settings": {
+ "Raven/DataDir": "~\\Databases\\firstDb",
+ "Raven/ActiveBundles": "PeriodicBackup"
+ },
+ "SecuredSettings": {},
+ "Disabled": false
+ }
+ * */
+RavenClient.prototype.admin.createDatabase = function (databaseName, data, params) {
+  return this.parent.http.put('/admin/databases/' + databaseName, data, {}, params);
+};
+
+RavenClient.prototype.admin.stopIndexing = function() {
+  return this.parent.http.post('/admin/stopIndexing');
+};
+
+RavenClient.prototype.admin.startIndexing = function() {
+  return this.parent.http.post('/admin/startIndexing');
+};
+
+RavenClient.prototype.admin.getIndexingStatus = function() {
+  return this.parent.http.get('/admin/indexingStatus');
+};
+
+RavenClient.prototype.studioTasks = {
+  init: function (parent) {
+    this.parent = parent;
+  }
+};
+
+RavenClient.prototype.studioTasks.exportDatabase = function (smugglerOptions) {
+  return this.parent.http.http('POST', '/studio-tasks/exportDatabase', {
+    data: 'SmugglerOptions=' + encodeURIComponent(angular.toJson(smugglerOptions)),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    responseType: 'blob'
+  });
 };
 
 angular.module('ngRaven', [])

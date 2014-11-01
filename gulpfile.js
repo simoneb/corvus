@@ -27,8 +27,7 @@ gulp.task('install', ['git-check'], function () {
     'https://github.com/EddyVerbruggen/cordova-plugin-actionsheet.git',
     'org.apache.cordova.inappbrowser',
     'org.apache.cordova.statusbar'
-  ]
-      .forEach(function (plugin) {
+  ].forEach(function (plugin) {
         if (typeof plugin == 'object') {
           exec('cordova plugin add ' + plugin.name + ' ' + plugin.options.join(' '));
         } else {

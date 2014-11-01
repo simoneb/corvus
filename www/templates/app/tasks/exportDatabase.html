@@ -1,0 +1,24 @@
+<ion-view title="Export database">
+    <ion-content>
+        <ion-list>
+            <ion-item class="item-divider">
+                General Settings
+            </ion-item>
+            <ion-checkbox ng-model="options.includeDocuments">Include Documents</ion-checkbox>
+            <ion-checkbox ng-model="options.includeIndexes">Include Indexes</ion-checkbox>
+            <ion-checkbox ng-model="options.includeAttachments">Include Attachments</ion-checkbox>
+            <ion-checkbox ng-model="options.includeTransformers">Include Transformers</ion-checkbox>
+            <ion-checkbox ng-model="options.removeAnalyzers">Remove Analyzers</ion-checkbox>
+            <ion-item class="item-divider">Advanced Settings</ion-item>
+            <ion-item class="item-input">
+                <span class="input-label">Batch Size</span>
+                <input type="text" ng-model="options.batchSize">
+            </ion-item>
+            <ion-checkbox ng-model="options.includeExpiredDocuments">Include Expired Documents</ion-checkbox>
+            <!-- TODO: add missing options available in studio -->
+        </ion-list>
+        <button class="button button-positive button-block" ng-click="export()">
+            Export Database
+        </button>
+    </ion-content>
+</ion-view>
