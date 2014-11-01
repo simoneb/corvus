@@ -312,4 +312,33 @@ angular.module('corvus.services', [])
 
         return deferred.promise;
       };
+    })
+
+    .service('Quota', function ($window, CONFIG) {
+      function getQuotaData() {
+        return angular.fromJson($window.localStorage.getItem('quota'));
+      }
+
+      function saveQuota(quota) {
+        $window.localStorage.setItem('quota', angular.toJson(quota));
+      }
+
+      this.track = function () {
+        var hour = moment().format('YYYYMMDDHH'),
+            quota = getQuotaData();
+
+        if (quota && quota.hour === hour) {
+          quota.requests++;
+        } else {
+          quota = { hour: hour, requests: 1 };
+        }
+
+        saveQuota(quota);
+      };
+
+      this.limitExceeded = function () {
+        var quota = getQuotaData();
+
+        return quota && quota.requests > CONFIG.maxRequestsPerHour;
+      };
     });

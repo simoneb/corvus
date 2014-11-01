@@ -5,7 +5,7 @@
     <ion-content>
         <ion-list>
             <ion-item ng-repeat="document in $parent.documents">
-                <h3>{{ document | omitMetadata }}</h3>
+                <h3>{{ document | omitMetadata | json | limitTo:200 }}</h3>
             </ion-item>
         </ion-list>
 

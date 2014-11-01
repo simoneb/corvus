@@ -1,5 +1,6 @@
 {
   "debug": true,
   "version": "0.0.20",
-  "maxNumberOfFreeDocuments": 2000
+  "maxNumberOfFreeDocuments": 2000,
+  "maxRequestsPerHour": 20
 }

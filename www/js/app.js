@@ -301,7 +301,20 @@ angular.module('corvusApp',
       });
     })
 
-    .run(function checkPurchasesOnGetStats($rootScope, $q, $location, Dialogs, Store, Toast, CONFIG) {
+    .run(function trackQuota(Quota) {
+      function trackUsage(res) {
+        Quota.track();
+        return res;
+      }
+
+      var originalGet = HttpClient.prototype.get;
+
+      HttpClient.prototype.get = function() {
+        return originalGet.apply(this, Array.prototype.slice.call(arguments)).then(trackUsage);
+      }
+    })
+
+    .run(function applyQuotaOnGetStats($rootScope, $q, $location, Quota, Dialogs, Store, Toast, CONFIG) {
       var originalGetStats = RavenClient.prototype.getStats;
 
       function rejectAndGoHome(err) {
@@ -328,7 +341,7 @@ angular.module('corvusApp',
       function checkPurchases(getStatsRes) {
         var documentCount = getStatsRes.data.CountOfDocuments;
 
-        if (documentCount <= CONFIG.maxNumberOfFreeDocuments) {
+        if (documentCount <= CONFIG.maxNumberOfFreeDocuments || !Quota.limitExceeded()) {
           return getStatsRes;
         }
 
