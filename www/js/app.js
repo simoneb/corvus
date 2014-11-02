@@ -322,7 +322,7 @@ angular.module('corvusApp',
 
       var originalGet = HttpClient.prototype.get;
 
-      HttpClient.prototype.get = function() {
+      HttpClient.prototype.get = function () {
         return originalGet.apply(this, Array.prototype.slice.call(arguments)).then(trackUsage);
       }
     })

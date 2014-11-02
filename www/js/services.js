@@ -1,4 +1,9 @@
 angular.module('corvus.services', [])
+    .constant('GOOGLE_API', {
+      clientId: '201287770974-j44d1fndnd41qmjtegk5smb1pbla8cbu.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/drive'
+    })
+
     .service('Connections', function ($window) {
       var self = this,
           store = $window.localStorage;

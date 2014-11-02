@@ -27,3 +27,6 @@ www/lib/moment/min/moment-with-locales.min.js
 www/lib/moment/min/moment-with-locales.js
 www/lib/ionic/css/ionic.css
 www/lib/moment/moment.js
+www/lib/jquery/src
+www/lib/jquery/dist/jquery.js
+www/lib/jquery/dist/jquery.min.map

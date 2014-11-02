@@ -1,6 +1,13 @@
 <ion-view title="Tasks">
     <ion-content class="has-header">
         <ion-list>
+            <ion-item if-v3="client"
+                      class="item-icon-right"
+                      ui-sref="app.tasks.exportDatabase"
+                      ui-sref-active="active"
+                      menu-close>Export database
+                <i class="icon ion-ios7-arrow-forward stable"></i>
+            </ion-item>
             <ion-item class="item-icon-right"
                       ui-sref="app.tasks.backupDatabase"
                       ui-sref-active="active"
