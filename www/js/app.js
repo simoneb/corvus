@@ -31,6 +31,7 @@ angular.module('corvusApp',
       'corvus.directives',
       'ngRaven',
       'ngCordova',
+      'ngGoogle',
       'corvus.config'])
 
     .config(function initializeLogging(CONFIG) {
@@ -52,6 +53,10 @@ angular.module('corvusApp',
       }
 
       LE.info('Startup with config', CONFIG);
+    })
+
+    .config(function initializeGoogle($googleProvider, GOOGLE_API) {
+      $googleProvider.initialize(GOOGLE_API.clientId, GOOGLE_API.scopes);
     })
 
     .config(function configureRouting($stateProvider, $urlRouterProvider, ravenProvider) {

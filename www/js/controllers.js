@@ -667,8 +667,7 @@ angular.module('corvus.controllers', [])
     .controller('TasksCtrl', function ($scope, ravenClient) {
       $scope.client = ravenClient;
     })
-    .controller('ExportDatabaseCtrl', function ($scope, $window, $http, ravenClient, GOOGLE_API) {
-      // TODO: unfortunately downloading a file with object url does not work
+    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient, $google) {
       $scope.options = {
         includeDocuments: true,
         includeIndexes: true,
@@ -676,80 +675,34 @@ angular.module('corvus.controllers', [])
       };
 
       $scope.export = function () {
-        var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
-                  client_id: GOOGLE_API.clientId,
-                  scope: GOOGLE_API.scope,
-                  redirect_uri: 'http://localhost',
-                  response_type: 'code'
-                }),
-            authWindow = $window.open(authUrl, '_blank', 'location=no,toolbar=no');
+        var types = 0,
+            opt = $scope.options;
 
-        $(authWindow).on('loadstart', function (e) {
-          var url = e.originalEvent.url;
-          var code = /\?code=(.+)$/.exec(url);
-          var error = /\?error=(.+)$/.exec(url);
+        if (opt.includeDocuments) types += 1;
+        if (opt.includeIndexes) types += 2;
+        if (opt.includeAttachments) types += 4;
+        if (opt.includeTransformers) types += 8;
+        if (opt.removeAnalyzers) types += 8000;
 
-          console.log('token', code);
-          console.log('error', error);
-
-          if (code || error) {
-            authWindow.close();
-          }
-
-          if (code) {
-            $http.post('https://accounts.google.com/o/oauth2/token', {
-              code: code[1],
-              client_id: GOOGLE_API.clientId,
-              redirect_uri: 'http://localhost',
-              grant_type: 'authorization_code'
-            }, {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              },
-              transformRequest: function (obj) {
-                var str = [];
-                for (var p in obj)
-                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                return str.join("&");
-              },
-            }).success(function (data) {
-              console.log('successfully obtained authorization code', data);
-
-              var types = 0,
-                  opt = $scope.options;
-              
-              if (opt.includeDocuments) types += 1;
-              if (opt.includeIndexes) types += 2;
-              if (opt.includeAttachments) types += 4;
-              if (opt.includeTransformers) types += 8;
-              if (opt.removeAnalyzers) types += 8000;
-
-              /*ravenClient.studioTasks.exportDatabase({
-               OperateOnTypes: types,
-               BatchSize: opt.batchSize,
-               ShouldExcludeExpired: !opt.excludeExpiredDocuments,
-               Filters: [],
-               TransformScript: ''
-               });*/
-
-              $http.get('https://www.googleapis.com/drive/v2/files', {
-                params: {
-                  access_token: data.access_token
-                }
-              }).success(function (data) {
-                console.log('success', data);
-              }).error(function (data) {
-                console.log('error', data);
-              })
-
-            }).error(function (data) {
-              console.log('error obtaining authorization code', data)
-            });
-          }
-
-          if (error) {
-            console.log('error obtaining access code', error[1]);
-          }
+        ravenClient.studioTasks.exportDatabase({
+          OperateOnTypes: types,
+          BatchSize: opt.batchSize,
+          ShouldExcludeExpired: !opt.excludeExpiredDocuments,
+          Filters: [],
+          TransformScript: ''
+        }).then(function (res) {
+          $google.post('https://www.googleapis.com/upload/drive/v2/files', res.data, {
+            headers: {
+              'Content-Type': 'application/octet-stream'
+            },
+            transformRequest: function (body) {
+              return body;
+            }
+          }).then(function (res) {
+            console.log('file created', res);
+          }, function (res) {
+            console.log('file not created', res);
+          });
         });
 
         // TODO: it would be beautiful if this worked
