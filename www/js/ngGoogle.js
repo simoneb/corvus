@@ -10,8 +10,11 @@ angular.module('ngGoogle', [])
           config.scope = scopes.join(' ');
         },
         $get: function ($window, $http, $q, $interval) {
+          var isCordova = !/http/.test($window.location.protocol),
+              prefix = isCordova ? '' : 'http://cors.maxogden.com/';
+
           function requestAccessToken(authorizationCode) {
-            return $http.post('http://cors.maxogden.com/https://accounts.google.com/o/oauth2/token', {
+            return $http.post(prefix + 'https://accounts.google.com/o/oauth2/token', {
               code: authorizationCode,
               client_id: config.clientId,
               redirect_uri: redirectUrl,
@@ -30,8 +33,15 @@ angular.module('ngGoogle', [])
           function handleBrowserAuthorization(authWindow) {
             var deferred = $q.defer(),
                 intervalClear = $interval(function () {
-                  var url = authWindow.location.href,
-                      code = /\?code=([^#]+)/.exec(url),
+                  var url;
+
+                  try {
+                    url = authWindow.location.href;
+                  } catch (err) {
+                    return;
+                  }
+
+                  var code = /\?code=([^#]+)/.exec(url),
                       error = /\?error=([^#]+)/.exec(url);
 
                   if (code || error) {
@@ -80,10 +90,10 @@ angular.module('ngGoogle', [])
                     }),
                 authWindow = $window.open(authUrl, '_blank', 'location=no,toolbar=no');
 
-            if (/http/.test($window.location.protocol)) {
-              return handleBrowserAuthorization(authWindow);
-            } else {
+            if (isCordova) {
               return handleCordovaAuthorization(authWindow);
+            } else {
+              return handleBrowserAuthorization(authWindow);
             }
           }
 
