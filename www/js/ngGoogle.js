@@ -1,22 +1,56 @@
 angular.module('ngGoogle', [])
     .provider('$google', function () {
-      var config = {};
+      var config = {},
+      // this url does not matter in cordova, while it needs to be the same origin on desktop
+          redirectUrl = 'http://localhost:8100';
 
       return {
         initialize: function (clientId, scopes) {
           config.clientId = clientId;
           config.scope = scopes.join(' ');
         },
-        $get: function ($window, $http, $q) {
-          function authorize() {
-            var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
-                      client_id: config.clientId,
-                      scope: config.scope,
-                      redirect_uri: 'http://localhost',
-                      response_type: 'code'
-                    }),
-                authWindow = $window.open(authUrl, '_blank', 'location=no,toolbar=no'),
-                deferred = $q.defer();
+        $get: function ($window, $http, $q, $interval) {
+          function requestAccessToken(authorizationCode) {
+            return $http.post('http://cors.maxogden.com/https://accounts.google.com/o/oauth2/token', {
+              code: authorizationCode,
+              client_id: config.clientId,
+              redirect_uri: redirectUrl,
+              grant_type: 'authorization_code'
+            }, {
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              transformRequest: function (obj) {
+                var str = [];
+                for (var p in obj)
+                  str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                return str.join("&");
+              }
+            });
+          }
+
+          function handleBrowserAuthorization(authWindow) {
+            var deferred = $q.defer(),
+                intervalClear = $interval(function () {
+                  var url = authWindow.location.href,
+                      code = /\?code=([^#]+)/.exec(url),
+                      error = /\?error=([^#]+)/.exec(url);
+
+                  if (code || error) {
+                    authWindow.close();
+                    $interval.cancel(intervalClear);
+                  }
+
+                  if (code) {
+                    deferred.resolve(requestAccessToken(code[1]));
+                  } else if (error) {
+                    deferred.reject(error[1]);
+                  }
+                }, 1000);
+
+            return deferred.promise;
+          }
+
+          function handleCordovaAuthorization(authWindow) {
+            var deferred = $q.defer();
 
             $(authWindow).on('loadstart', function (e) {
               var url = e.originalEvent.url;
@@ -28,54 +62,46 @@ angular.module('ngGoogle', [])
               }
 
               if (code) {
-                $http.post('https://accounts.google.com/o/oauth2/token', {
-                  code: code[1],
-                  client_id: config.clientId,
-                  redirect_uri: 'http://localhost',
-                  grant_type: 'authorization_code'
-                }, {
-                  headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                  },
-                  transformRequest: function (obj) {
-                    var str = [];
-                    for (var p in obj)
-                      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                    return str.join("&");
-                  },
-                }).success(function (data) {
-                  console.log('successfully obtained authorization code', data);
-                  deferred.resolve(data);
-                }).error(function (data) {
-                  deferred.reject(data);
-                  console.log('error obtaining authorization code', data)
-                });
+                deferred.resolve(requestAccessToken(code[1]));
               } else if (error) {
-                deferred.reject(error[1]);
-                console.log('error obtaining access code', error[1]);
+                return deferred.reject(error[1]);
               }
             });
 
             return deferred.promise;
           }
 
-          function createConfig(config, auth) {
+          function authorize() {
+            var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
+                      client_id: config.clientId,
+                      scope: config.scope,
+                      redirect_uri: redirectUrl,
+                      response_type: 'code'
+                    }),
+                authWindow = $window.open(authUrl, '_blank', 'location=no,toolbar=no');
+
+            if (/http/.test($window.location.protocol)) {
+              return handleBrowserAuthorization(authWindow);
+            } else {
+              return handleCordovaAuthorization(authWindow);
+            }
+          }
+
+          function createConfig(config, authRes) {
             return _.merge({
-              headers: {
-                Authorization: 'Bearer ' + auth.access_token
-              }
+              headers: { Authorization: 'Bearer ' + authRes.data.access_token }
             }, config || {})
           }
 
           return {
             get: function (url, config) {
-              return authorize().then(function (auth) {
-                return $http.get(url, createConfig(config, auth))
-              })
+              return authorize().then(function (authRes) {
+                return $http.get(url, createConfig(config, authRes))
+              });
             },
             post: function (url, data, config) {
-              return authorize().then(function (auth) {
-                return $http.post(url, data, createConfig(config, auth));
+              return authorize().then(function (authRes) {
+                return $http.post(url, data, createConfig(config, authRes));
               });
             }
           }
