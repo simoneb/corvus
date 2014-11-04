@@ -667,7 +667,7 @@ angular.module('corvus.controllers', [])
     .controller('TasksCtrl', function ($scope, ravenClient) {
       $scope.client = ravenClient;
     })
-    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient, $google) {
+    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient, databaseName, $google) {
       $scope.options = {
         includeDocuments: true,
         includeIndexes: true,
@@ -691,18 +691,17 @@ angular.module('corvus.controllers', [])
           Filters: [],
           TransformScript: ''
         }).then(function (res) {
-          $google.post('https://www.googleapis.com/upload/drive/v2/files', res.data, {
-            headers: {
-              'Content-Type': 'application/octet-stream'
-            },
-            transformRequest: function (body) {
-              return body;
-            }
-          }).then(function (res) {
-            console.log('file created', res);
-          }, function (res) {
-            console.log('file not created', res);
-          });
+          $google.post('https://www.googleapis.com/upload/drive/v2/files',
+              res.data, {
+                headers: {
+                  'Content-Type': 'application/octet-stream'
+                },
+                transformRequest: angular.identity
+              }).then(function (res) {
+                console.log('file created', res);
+              }, function (res) {
+                console.log('file not created', res);
+              });
         });
 
         // TODO: it would be beautiful if this worked
