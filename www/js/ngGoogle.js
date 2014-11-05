@@ -2,7 +2,8 @@ angular.module('ngGoogle', [])
     .provider('$google', function () {
       var config = {},
       // this url does not matter in cordova, while it needs to be the same origin on desktop
-          redirectUrl = 'http://localhost:8100';
+          redirectUrl = 'http://localhost:8100',
+          baseUrl = 'https://www.googleapis.com';
 
       return {
         initialize: function (clientId, scopes) {
@@ -11,7 +12,8 @@ angular.module('ngGoogle', [])
         },
         $get: function ($window, $http, $q, $interval) {
           var isCordova = !/http/.test($window.location.protocol),
-              prefix = isCordova ? '' : 'http://cors.maxogden.com/';
+              prefix = isCordova ? '' : 'http://cors.maxogden.com/',
+              tokenResponse;
 
           function requestAccessToken(authorizationCode) {
             return $http.post(prefix + 'https://accounts.google.com/o/oauth2/token', {
@@ -27,6 +29,8 @@ angular.module('ngGoogle', [])
                   str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
                 return str.join("&");
               }
+            }).then(function (res) {
+              return tokenResponse = res.data;
             });
           }
 
@@ -82,6 +86,8 @@ angular.module('ngGoogle', [])
           }
 
           function authorize() {
+            if (tokenResponse) return $q.when(tokenResponse);
+
             var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
                       client_id: config.clientId,
                       scope: config.scope,
@@ -97,21 +103,26 @@ angular.module('ngGoogle', [])
             }
           }
 
-          function createConfig(config, authRes) {
+          function createConfig(config, auth) {
             return _.merge({
-              headers: { Authorization: 'Bearer ' + authRes.data.access_token }
+              headers: { Authorization: 'Bearer ' + auth.access_token }
             }, config || {})
           }
 
           return {
             get: function (url, config) {
-              return authorize().then(function (authRes) {
-                return $http.get(url, createConfig(config, authRes))
+              return authorize().then(function (auth) {
+                return $http.get(baseUrl + url, createConfig(config, auth))
               });
             },
             post: function (url, data, config) {
-              return authorize().then(function (authRes) {
-                return $http.post(url, data, createConfig(config, authRes));
+              return authorize().then(function (auth) {
+                return $http.post(baseUrl + url, data, createConfig(config, auth));
+              });
+            },
+            put: function (url, data, config) {
+              return authorize().then(function (auth) {
+                return $http.put(baseUrl + url, data, createConfig(config, auth));
               });
             }
           }

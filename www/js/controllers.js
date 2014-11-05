@@ -690,18 +690,32 @@ angular.module('corvus.controllers', [])
           ShouldExcludeExpired: !opt.excludeExpiredDocuments,
           Filters: [],
           TransformScript: ''
-        }).then(function (res) {
-          $google.post('https://www.googleapis.com/upload/drive/v2/files',
-              res.data, {
-                headers: {
-                  'Content-Type': 'application/octet-stream'
-                },
+        }).then(function (exportRes) {
+          $google.get('/drive/v2/files', {
+            params: {
+              q: "mimeType = 'application/vnd.google-apps.folder' and title = 'Corvus'"
+            }
+          }).then(function (folderRes) {
+            if (folderRes.data.items.length) return folderRes.data.items[0];
+
+            return $google.post('/drive/v2/files', {
+              title: 'Corvus',
+              mimeType: 'application/vnd.google-apps.folder',
+              parents: [{ 'id': 'root' }]
+            }).then(function (res) {
+              return res.data;
+            });
+          }).then(function (folder) {
+            $google.post('/drive/v2/files', {
+              title: databaseName + '-' + moment().toISOString() + '.ravendump',
+              parents: [folder]
+            }).then(function (createFileMetadataRes) {
+              $google.put('/upload/drive/v2/files/' + createFileMetadataRes.data.id, exportRes.data, {
+                headers: { 'Content-Type': 'application/octet-stream' },
                 transformRequest: angular.identity
-              }).then(function (res) {
-                console.log('file created', res);
-              }, function (res) {
-                console.log('file not created', res);
               });
+            });
+          });
         });
 
         // TODO: it would be beautiful if this worked
