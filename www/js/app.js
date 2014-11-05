@@ -56,7 +56,8 @@ angular.module('corvusApp',
     })
 
     .config(function initializeGoogle($googleProvider, GOOGLE_API) {
-      $googleProvider.initialize(GOOGLE_API.clientId, GOOGLE_API.scopes);
+      // redirect url does not matter in cordova, while it needs to be the same origin on desktop
+      $googleProvider.initialize(GOOGLE_API.clientId, GOOGLE_API.scopes, 'http://localhost:8100');
     })
 
     .config(function configureRouting($stateProvider, $urlRouterProvider, ravenProvider) {

@@ -1,14 +1,13 @@
 angular.module('ngGoogle', [])
     .provider('$google', function () {
-      var config = {},
-      // this url does not matter in cordova, while it needs to be the same origin on desktop
-          redirectUrl = 'http://localhost:8100',
+      var apiConfig = {},
           baseUrl = 'https://www.googleapis.com';
 
       return {
-        initialize: function (clientId, scopes) {
-          config.clientId = clientId;
-          config.scope = scopes.join(' ');
+        initialize: function (clientId, scopes, redirectUri) {
+          apiConfig.clientId = clientId;
+          apiConfig.scope = scopes.join(' ');
+          apiConfig.redirectUri = redirectUri;
         },
         $get: function ($window, $http, $q, $interval) {
           var isCordova = !/http/.test($window.location.protocol),
@@ -18,8 +17,8 @@ angular.module('ngGoogle', [])
           function requestAccessToken(authorizationCode) {
             return $http.post(prefix + 'https://accounts.google.com/o/oauth2/token', {
               code: authorizationCode,
-              client_id: config.clientId,
-              redirect_uri: redirectUrl,
+              client_id: apiConfig.clientId,
+              redirect_uri: apiConfig.redirectUri,
               grant_type: 'authorization_code'
             }, {
               headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -89,9 +88,9 @@ angular.module('ngGoogle', [])
             if (tokenResponse) return $q.when(tokenResponse);
 
             var authUrl = 'https://accounts.google.com/o/oauth2/auth?' + $.param({
-                      client_id: config.clientId,
-                      scope: config.scope,
-                      redirect_uri: redirectUrl,
+                      client_id: apiConfig.clientId,
+                      scope: apiConfig.scope,
+                      redirect_uri: apiConfig.redirectUri,
                       response_type: 'code'
                     }),
                 authWindow = $window.open(authUrl, '_blank', 'location=no,toolbar=no');
