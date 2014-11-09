@@ -58,7 +58,7 @@ angular.module('corvus.services', [])
         }
       };
 
-      self.getDefaultConnection = function () {
+      self.getDefaultConnection1 = function () {
         return angular.copy({
           name: 'ravenhq',
           url: 'https://kiwi.ravenhq.com',
@@ -66,7 +66,17 @@ angular.module('corvus.services', [])
           authenticationType: 'apiKey',
           database: 'simoneb-test'
         });
-      }
+      };
+
+      self.getDefaultConnection2 = function () {
+        return angular.copy({
+          name: 'aws',
+          url: 'http://54.76.194.156',
+          apiKey: 'reaonly/AAbtXA9owsNs4uWPXLN',
+          authenticationType: 'apiKey',
+          database: 'northwind'
+        });
+      };
     })
     .service('Settings', function ($window) {
       var self = this,
@@ -348,4 +358,24 @@ angular.module('corvus.services', [])
 
         return quota && quota.requests > CONFIG.maxRequestsPerHour;
       };
+    })
+    .factory('FeatureUsage', function ($window) {
+      function get() {
+        return angular.fromJson($window.localStorage.getItem('featureUsage') || '{}');
+      }
+
+      function save(value) {
+        $window.localStorage.setItem('featureUsage',
+            angular.toJson(angular.extend(get(), value)));
+      }
+
+      return {
+        hasExportedDatabase: function (value) {
+          if (value) {
+            save({ hasExportedDatabase: value });
+          } else {
+            return get().hasExportedDatabase
+          }
+        }
+      }
     });

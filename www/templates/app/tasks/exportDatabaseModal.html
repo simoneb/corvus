@@ -1,0 +1,36 @@
+<ion-modal-view>
+    <ion-header-bar class="bar-dark">
+        <h1 class="title">Export Database</h1>
+    </ion-header-bar>
+    <ion-content class="padding">
+        <p>
+            It looks like you're using this feature for the first time,
+            here's something you should be aware of.
+        </p>
+
+        <p>
+            Corvus can export a database to your <b>Google Drive</b>, to do so it will
+            prompt you to log into your Google account and give your permissions to access Drive.
+        </p>
+
+        <p>
+            Then it will create a <b>Corvus</b> folder where it will
+            upload your database exports.
+        </p>
+
+        <p>
+            Corvus will only ever access your Drive for this purpose and nothing else.
+            Also, it won't touch anything outside the <b>Corvus</b> folder.
+        </p>
+
+        <p>
+            Please note that the file you export from your <b>RavenDB</b> server will
+            have to be downloaded to your device first, which may not be possible
+            for large databases.
+        </p>
+
+        <button class="button button-block button-positive" ng-click="continueExport()">
+            Continue
+        </button>
+    </ion-content>
+</ion-modal-view>

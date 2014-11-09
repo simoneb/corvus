@@ -107,13 +107,22 @@ angular.module('corvus.controllers', [])
 
         $timeout(function () {
           $scope.rightSwipe = false;
-        }, 500);
+        }, 1000);
+
+        if ($scope.leftSwipe) {
+          $scope.connection = Connections.getDefaultConnection2();
+        }
       }, formElement);
 
       $ionicGesture.on('swipeleft', function () {
+        $scope.leftSwipe = true;
+
+        $timeout(function () {
+          $scope.leftSwipe = false;
+        }, 1000);
+
         if ($scope.rightSwipe) {
-          $scope.connection = Connections.getDefaultConnection();
-          $scope.rightSwipe = false;
+          $scope.connection = Connections.getDefaultConnection1();
         }
       }, formElement);
     })
@@ -667,16 +676,29 @@ angular.module('corvus.controllers', [])
     .controller('TasksCtrl', function ($scope, ravenClient) {
       $scope.client = ravenClient;
     })
-    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient, databaseName, $google) {
+    .controller('ExportDatabaseCtrl', function ($scope, $window, ravenClient, databaseName, $google, $ionicModal, Spinner, Toast, FeatureUsage) {
       $scope.options = {
         includeDocuments: true,
         includeIndexes: true,
         batchSize: 1024
       };
 
-      $scope.export = function () {
+      $ionicModal.fromTemplateUrl('templates/app/tasks/exportDatabaseModal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.modal = modal;
+      });
+
+      $scope.$on('$destroy', function () {
+        $scope.modal.remove();
+      });
+
+      $scope.continueExport = function () {
         var types = 0,
             opt = $scope.options;
+
+        $scope.modal.hide();
+        Spinner.show();
 
         if (opt.includeDocuments) types += 1;
         if (opt.includeIndexes) types += 2;
@@ -691,7 +713,7 @@ angular.module('corvus.controllers', [])
           Filters: [],
           TransformScript: ''
         }).then(function (exportRes) {
-          $google.get('/drive/v2/files', {
+          return $google.get('/drive/v2/files', {
             params: {
               q: "mimeType = 'application/vnd.google-apps.folder' and title = 'Corvus'"
             }
@@ -703,23 +725,35 @@ angular.module('corvus.controllers', [])
               mimeType: 'application/vnd.google-apps.folder',
               parents: [{ 'id': 'root' }]
             }).then(function (res) {
+              FeatureUsage.hasExportedDatabase(true);
               return res.data;
             });
           }).then(function (folder) {
-            $google.post('/drive/v2/files', {
+            return $google.post('/drive/v2/files', {
               title: databaseName + '-' + moment().toISOString() + '.ravendump',
               parents: [folder]
             }).then(function (createFileMetadataRes) {
-              $google.put('/upload/drive/v2/files/' + createFileMetadataRes.data.id, exportRes.data, {
+              return $google.put('/upload/drive/v2/files/' + createFileMetadataRes.data.id, exportRes.data, {
                 headers: { 'Content-Type': 'application/octet-stream' },
                 transformRequest: angular.identity
               });
             });
           });
+        }).then(function () {
+          Toast.showShortBottom('Database exported successfully');
+        }).catch(function (err) {
+          Toast.showLongBottom('There was an error exporting the database');
+        }).finally(function () {
+          Spinner.hide();
         });
+      };
 
-        // TODO: it would be beautiful if this worked
-        //window.open(window.URL.createObjectURL(res.data), '_system');
+      $scope.export = function () {
+        if (!FeatureUsage.hasExportedDatabase()) {
+          $scope.modal.show();
+        } else {
+          $scope.continueExport();
+        }
       };
     })
     .controller('ToggleIndexingCtrl', function ($scope, ravenClient) {
